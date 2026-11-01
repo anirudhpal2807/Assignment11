@@ -1,0 +1,234 @@
+{
+  "catchup": {
+    "default": {
+      "summary": [
+        "Mumbai Mavericks 186 chase kar rahe hain, Kabir aur Arjun ne innings sambhali hui hai.",
+        "Over 16 me Chargers ne DRS nahi liya jahan Kabir leg stump pe plumb tha.",
+        "Required run rate 10 ke aas-paas chal raha hai, match balance par hai."
+      ],
+      "watchNext": "Agla over death bowler Tushar Pandey ka hai, boundaries rokna must hai."
+    },
+    "over17": {
+      "summary": [
+        "Turning point: Over 16.2 pe Chennai ne review nahi liya aur Kabir bach gaye.",
+        "Kabir Mehta aur Arjun Rao dono fire pe hain, boundary rate tezi se badh raha hai.",
+        "Mavericks chase me aage hain kyunki wickets haath me hain aur 30 needed off 18."
+      ],
+      "watchNext": "Vikram Nair ka spell decide karega ki game last over tak jayega ya pehle khatam hoga."
+    },
+    "over19": {
+      "summary": [
+        "Rehan Ali ne over 19 me 2 bade wickets nikale - Kabir aur Arjun dono pavilion wapas!",
+        "Match pura turn ho gaya, Chargers fans stadium me jhoom uthe hain.",
+        "Mavericks ko aakhri over me 14 runs chahiye, 5 wickets gir chuke hain."
+      ],
+      "watchNext": "Tushar Pandey aakhri 6 balls dalenge Sameer Khan aur Dev Iyer ke saamne."
+    }
+  },
+  "explain": {
+    "13": {
+      "naya": {
+        "hinglish": "Bowler ne appeal ki par umpire ne out nahi diya. Chennai ne third umpire (DRS) ko check karne ko nahi kaha, halaki replay me ball stumps pe lag rahi thi!",
+        "english": "The bowler appealed for leg-before-wicket, but the umpire said not out. Chennai chose not to use DRS review, even though replays showed it would have been out!",
+        "hindi": "गेंदबाज ने पगबाधा की अपील की लेकिन अंपायर ने नॉट आउट दिया। चेन्नई ने रिव्यू नहीं लिया, जबकि रीप्ले में गेंद स्टंप्स पर लग रही थी!"
+      },
+      "regular": {
+        "hinglish": "Over 16.2 pe Rehan Ali ki straight delivery pe clear LBW appeal thi. Chargers ne DRS burn hone ke dar se review nahi liya aur Kabir Mehta ko lifeline mil gayi.",
+        "english": "Clear LBW shout on 16.2 off Rehan Ali. Chargers hesitated and refused to review; ball tracking confirmed it was crashing into leg stump.",
+        "hindi": "16.2 ओवर पर रेहान अली की गेंद पर साफ एलबीडब्ल्यू था। चार्जर्स ने रिव्यू नहीं लिया और कबीर मेहता को जीवनदान मिल गया।"
+      },
+      "diehard": {
+        "hinglish": "16.2: Rehan's quick arm ball pitched in line and straightened. Impact was umpire's call/in-line, hitting leg stump 50%+. Chargers made a tactical blunder not reviewing Kabir on 34.",
+        "english": "16.2: Rehan's skidder beat Kabir on the inside edge. Hawkeye projection confirmed 3 reds hitting leg stump. Huge captaincy lapse by Chargers with 2 reviews remaining.",
+        "hindi": "16.2: रेहान की स्किडर पर हॉक-आई ने तीन लाल निशान दिखाए। चार्जर्स के कप्तान की रणनीतिक चूक, कबीर को बड़ा जीवनदान मिला।"
+      }
+    },
+    "21": {
+      "naya": {
+        "hinglish": "Batter ne hawa me shot maara par fielder ne aasan sa catch chhod diya, jisse batsman bach gaya aur run bhi mil gaya.",
+        "english": "The batter mistimed a high shot, but the fielder spilled an easy regulation catch at deep midwicket, gifting a huge second chance.",
+        "hindi": "बल्लेबाज ने हवा में शॉट खेला लेकिन फील्डर ने एक आसान कैच टपका दिया जिससे बल्लेबाज बच गया।"
+      },
+      "regular": {
+        "hinglish": "Over 17.4 pe Arjun Rao ne miscue kiya aur deep midwicket pe Tushar Pandey ne sitter catch drop kar diya! Mumbai ke liye massive relief.",
+        "english": "Crucial drop on 17.4! Arjun Rao sliced Vikram Nair's slower cutter and Tushar Pandey shelled a dolly at deep midwicket.",
+        "hindi": "17.4 ओवर पर अर्जुन राव का सीधा कैच तुषार पांडे ने डीप मिडविकेट पर छोड़ दिया! मैच का अहम मोड़।"
+      },
+      "diehard": {
+        "hinglish": "17.4: Nair rolled fingers over seam at 118 kph. Rao dragged the heave off the toe-end. Pandey misjudged swirling wind at deep midwicket and spilled an 0.88 xC chance.",
+        "english": "17.4: Off-cutter induced a 68-degree launch angle toe-end skier. Pandey overrun the trajectory at deep midwicket, dropping an 88% probability catch.",
+        "hindi": "17.4: नायर की स्लोअर कटर पर अर्जुन राव का टॉप-एज लगा। डीप मिडविकेट पर तुषार पांडे ने आसान कैच गिरा दिया।"
+      }
+    },
+    "28": {
+      "naya": {
+        "hinglish": "Bowler ne ek shandar ball dali jo seedha dande (stumps) pe ja lagi aur batsman out ho gaya! Match me zabardast twist aa gaya.",
+        "english": "The bowler bowled an unplayable delivery that crashed straight into middle stump! Massive twist in the match.",
+        "hindi": "गेंदबाज ने एक शानदार गेंद फेंकी जो सीधे स्टंप्स पर जा लगी और बल्लेबाज बोल्ड हो गया! मैच में रोमांचक मोड़।"
+      },
+      "regular": {
+        "hinglish": "Over 18.5 pe Rehan Ali ne dangerous googly daali aur Arjun Rao 49 runs pe clean bowled! Ek hi over me 2 wickets gir gaye.",
+        "english": "Over 18.5: Rehan Ali bamboozles Arjun Rao with a sharp googly through the gate! Rao falls for 49, second wicket of the over.",
+        "hindi": "18.5 ओवर: रेहान अली की गुगली पर अर्जुन राव 49 रन पर क्लीन बोल्ड हो गए! एक ही ओवर में दूसरा विकेट गिरा।"
+      },
+      "diehard": {
+        "hinglish": "18.5: Rehan delivered a 86 kph wrong'un with 2100 rpm revs. Dipped late, breached Rao's forward defense gap and pegged middle stump. Chennai win probability jumped from 22% to 61%.",
+        "english": "18.5: Sharp drift and dip on the wrong'un, exploiting the gap between bat and pad of Rao (49 off 35). Win probability swings +39% in favour of Chargers.",
+        "hindi": "18.5: रेहान अली की 86 किमी/घंटे की गुगली सीधे बल्ले और पैड के बीच से निकलकर मिडिल स्टंप पर जा लगी।"
+      }
+    }
+  },
+  "roomPulse": {
+    "15": {
+      "topQuestions": [
+        {
+          "question": "Mumbai ko jeetne ke liye kitne runs chahiye?",
+          "askedBy": 45,
+          "answer": "Mumbai ko 30 balls me 48 runs chahiye, target 186 hai."
+        },
+        {
+          "question": "Kabir Mehta ka strike rate kitna chal raha hai?",
+          "askedBy": 28,
+          "answer": "Kabir Mehta 155+ ke strike rate se khel rahe hain, 1 boundary aur 1 six lagaya hai."
+        }
+      ],
+      "mood": {
+        "tension": 45,
+        "hype": 70,
+        "anger": 10,
+        "humour": 35,
+        "label": "Electric & Excited"
+      },
+      "creatorTips": [
+        "Audience ko batao ki 15th over me 14 runs aane se chase settle ho gayi hai.",
+        "Kabir Mehta ke fearless intent ko highlight karo.",
+        "Chat se pucho: 'Kya Chargers Rehan Ali ko agle over me bowling denge?'"
+      ]
+    },
+    "16": {
+      "topQuestions": [
+        {
+          "question": "Tushar Pandey ke overs me yorkers kitni accurate thi?",
+          "askedBy": 32,
+          "answer": "Pandey ne 3 yorkers execute kiye aur sirf 9 runs diye."
+        },
+        {
+          "question": "Required run rate ab kitna ho gaya hai?",
+          "askedBy": 24,
+          "answer": "Required run rate 9.75 rpo hai, 24 balls me 39 runs chahiye."
+        }
+      ],
+      "mood": {
+        "tension": 55,
+        "hype": 65,
+        "anger": 12,
+        "humour": 20,
+        "label": "Focused Anticipation"
+      },
+      "creatorTips": [
+        "Discuss karo ki middle overs me dot balls kitni costly hoti hain.",
+        "Chat ko remind karo ki Rehan Ali ke 2 overs abhi bache hain.",
+        "Poll run karo: 'Mumbai chase kar legi ya choke karegi?'"
+      ]
+    },
+    "17": {
+      "topQuestions": [
+        {
+          "question": "Chennai ne DRS kyu nahi liya over 16.2 pe?",
+          "askedBy": 76,
+          "answer": "Captain aur bowler ko laga ball leg stump miss kar rahi thi, jabki Hawkeye me hitting leg thi!"
+        },
+        {
+          "question": "Chargers ke paas kitne reviews bache hain?",
+          "askedBy": 39,
+          "answer": "Chargers ke paas abhi dono reviews safe the, review waste hone ka koi risk nahi tha."
+        }
+      ],
+      "mood": {
+        "tension": 75,
+        "hype": 80,
+        "anger": 60,
+        "humour": 15,
+        "label": "Controversial & Intense"
+      },
+      "creatorTips": [
+        "DRS decision pe audience ka frustration address karo: 'Clear LBW tha bhai!'",
+        "Explain karo ki DRS me hesitate karna match cost kar sakta hai.",
+        "Audience se pucho ki captain ka decision tha ya bowler ka conviction kam tha."
+      ]
+    },
+    "18": {
+      "topQuestions": [
+        {
+          "question": "Catch kisne drop kiya 17.4 over me?",
+          "askedBy": 68,
+          "answer": "Deep midwicket pe Tushar Pandey ne Arjun Rao ka aasan catch drop kar diya."
+        },
+        {
+          "question": "Ab aakhri 2 overs me kitne runs chahiye?",
+          "askedBy": 52,
+          "answer": "Mumbai Mavericks ko 12 balls me sirf 21 runs chahiye."
+        }
+      ],
+      "mood": {
+        "tension": 85,
+        "hype": 85,
+        "anger": 45,
+        "humour": 25,
+        "label": "High Voltage Chaos"
+      },
+      "creatorTips": [
+        "Dropped catch ke shock ko react karo: 'Catches win matches, kya match gaya?'",
+        "Mavericks ke advantage ko frame karo: 7 wickets in hand with 21 off 12.",
+        "Next over bowler Rehan Ali par spotlight dalo."
+      ]
+    },
+    "19": {
+      "topQuestions": [
+        {
+          "question": "Rehan Ali ne ek over me 2 wickets kaise liye?",
+          "askedBy": 92,
+          "answer": "18.2 pe Kabir ko boundary pe catch karwaya aur 18.5 pe Arjun ko sharp googly se bowled kiya!"
+        },
+        {
+          "question": "Last over me kitne runs chahiye aur kaun bowler hai?",
+          "askedBy": 110,
+          "answer": "14 runs chahiye 6 balls me. Tushar Pandey bowl karenge Sameer Khan ke saamne."
+        }
+      ],
+      "mood": {
+        "tension": 98,
+        "hype": 95,
+        "anger": 30,
+        "humour": 10,
+        "label": "Peak Nail-Biting Climax"
+      },
+      "creatorTips": [
+        "Screaming reaction: 'WHAT A MATCH! 2 wickets in the 19th over!'",
+        "Equation break down karo: '14 off 6, pure thriller final over!'",
+        "Chat prediction mangao: 'Sameer Khan ya Tushar Pandey?'"
+      ]
+    },
+    "20": {
+      "topQuestions": [
+        {
+          "question": "Match kisne jeeta aur aakhri ball pe kya hua?",
+          "askedBy": 140,
+          "answer": "Sameer Khan ne aakhri ball pe extra cover ke upar four marke Mumbai Mavericks ko champion banaya!"
+        }
+      ],
+      "mood": {
+        "tension": 30,
+        "hype": 100,
+        "anger": 15,
+        "humour": 40,
+        "label": "Wild Celebration"
+      },
+      "creatorTips": [
+        "Celebrate the unbelievable finish: 'WHAT A FINAL! Pure cinema!'",
+        "Sameer Khan ke ice-cool composure ki tareef karo.",
+        "Sign off with thanks to the room for an incredible watch-along."
+      ]
+    }
+  }
+}
