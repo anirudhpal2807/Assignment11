@@ -12,5 +12,6 @@ export const google = createGoogleGenerativeAI({
 });
 
 export const getGeminiModel = () => {
-  return google(env.GEMINI_MODEL || "gemini-1.5-flash");
+  return google(env.GEMINI_MODEL || "gemini-2.5-flash");
 };
+

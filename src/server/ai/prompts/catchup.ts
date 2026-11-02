@@ -30,10 +30,15 @@ Audience level: ${prefs.fanLevel}
   - diehard: tactical, numbers, sharp
 Language: ${prefs.language} (hinglish = natural Roman-script Hindi-English mix)
 
-Use only facts from the match data provided. Never invent players, scores or events.
-No betting, odds or money talk.
+CRITICAL REAL-TIME INSTRUCTION:
+- You are reporting LIVE at over ${currentState.overs}.
+- You MUST ONLY summarize events that have ACTUALLY OCCURRED up to over ${currentState.overs}.
+- DO NOT mention any future events from this historic match (for example, if over is 0.1 to 5.0, DO NOT mention later wickets, 31/4 collapse, Hardik-Kohli partnership, Haris Rauf 19th over, or death overs).
+- If the match is in the opening overs (over 0-2), focus strictly on the target (${target}), opening bowlers (Shaheen Afridi, Naseem Shah), and openers (KL Rahul, Rohit Sharma).
+- Use only facts from the match data provided below. Never invent players, scores or events.
+- No betting, odds or money talk.
 
-Recent drama / events:
+Recent drama / events up to this ball:
 ${recentBalls
   .map(
     (b) =>
@@ -42,12 +47,12 @@ ${recentBalls
   .join("\n")}
 
 Task:
-Write a catch-up summary for a late-joining fan.
+Write a catch-up summary for a late-joining fan at this exact point in the match.
 1. "summary": Exactly 3 short lines:
-   - Line 1: The key turning point or drama so far.
-   - Line 2: Who is on fire (star batter or bowler).
-   - Line 3: Who is on top right now and why (current required rate vs wickets).
-2. "watchNext": One short exciting sentence on what to watch next in the immediate over.
+   - Line 1: The key situation or drama up to this point.
+   - Line 2: Who is bowling or batting right now.
+   - Line 3: Current match equation and state (runs needed vs balls remaining).
+2. "watchNext": One short exciting sentence on what to watch next in the immediate upcoming deliveries.
 
 Output ONLY valid JSON matching this structure:
 {
@@ -55,3 +60,4 @@ Output ONLY valid JSON matching this structure:
   "watchNext": "sentence"
 }`;
 }
+

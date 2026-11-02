@@ -92,3 +92,4 @@ Perform batched analysis for this over:
 **Rationale:**
 - **Prompt Injection Defense**: Explicit security notice ensures hostile chat messages cannot hijack model instructions.
 - **Batched Efficiency**: F1 (Top Questions), F4 (Mood Meter), and F7 (Creator Panel) are resolved in a single API call per over.
+

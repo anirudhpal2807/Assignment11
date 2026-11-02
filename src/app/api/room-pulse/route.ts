@@ -68,23 +68,35 @@ export async function POST(req: NextRequest) {
     }
 
     // Match situation calculation at this over
-    const ballsElapsed = Math.min((overNumber - 14) * 6, matchData.balls.length);
+    const startBalls = (matchData.startOver || 0) * 6;
+    const ballsElapsed = Math.min(Math.max(0, overNumber * 6 - startBalls), matchData.balls.length);
     let score = matchData.startState.score;
     let wickets = matchData.startState.wickets;
     for (let i = 0; i < ballsElapsed; i++) {
       score += matchData.balls[i].runs + (matchData.balls[i].extras || 0);
       if (matchData.balls[i].wicket) wickets += 1;
     }
+    const totalBallsBowled = startBalls + ballsElapsed;
     const runsNeeded = Math.max(0, matchData.target - score);
-    const ballsRemaining = Math.max(0, 120 - (14 * 6 + ballsElapsed));
+    const ballsRemaining = Math.max(0, 120 - totalBallsBowled);
 
     // Fallback extraction
     const overKey = String(overNumber);
     const roomPulseFallbacks = fallbackData.roomPulse as Record<string, any>;
-    const fallbackOver =
-      roomPulseFallbacks[overKey] ||
-      roomPulseFallbacks["17"] ||
-      roomPulseFallbacks["15"];
+    let fallbackOver = roomPulseFallbacks[overKey];
+    if (!fallbackOver) {
+      if (overNumber <= 2) fallbackOver = roomPulseFallbacks["1"];
+      else if (overNumber <= 4) fallbackOver = roomPulseFallbacks["4"];
+      else if (overNumber <= 6) fallbackOver = roomPulseFallbacks["6"];
+      else if (overNumber <= 10) fallbackOver = roomPulseFallbacks["7"];
+      else if (overNumber <= 13) fallbackOver = roomPulseFallbacks["12"];
+      else if (overNumber <= 14) fallbackOver = roomPulseFallbacks["14"];
+      else if (overNumber <= 16) fallbackOver = roomPulseFallbacks["15"];
+      else if (overNumber <= 17) fallbackOver = roomPulseFallbacks["17"];
+      else if (overNumber <= 18) fallbackOver = roomPulseFallbacks["18"];
+      else if (overNumber <= 19) fallbackOver = roomPulseFallbacks["19"];
+      else fallbackOver = roomPulseFallbacks["20"];
+    }
 
     const prompt = buildRoomPulsePrompt({
       matchTitle: matchData.title,
@@ -128,3 +140,4 @@ export async function POST(req: NextRequest) {
     );
   }
 }
+

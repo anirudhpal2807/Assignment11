@@ -103,3 +103,4 @@ export interface HealthResponse {
   model: string;
   geminiReachable: boolean;
 }
+

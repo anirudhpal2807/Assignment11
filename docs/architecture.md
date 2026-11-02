@@ -32,3 +32,4 @@ Stands sits as an intelligent layer inside a live cricket watch-along broadcast 
 2. **Context-Sensitive Explanations**: Tapping any ball on the timeline invokes `/api/explain`. The prompt receives the ball commentary, bowler/batter context, and the fan preference level (`naya`, `regular`, `diehard`) in their preferred language (`hinglish`, `english`, `hindi`).
 3. **Resilient Fallback Design**: Every AI route is backed by curated fallback data in `fallback.json`. If an API key is absent, network drops, or LLM response times out (> 8s), the application transparently serves verified match commentary without breaking the user experience.
 4. **Client-Driven Simulation**: The match simulator runs entirely client-side using a clean tick model, allowing interactive speed adjustment (1x, 2x, 4x, pause) and forward/backward time-travel without server overhead.
+

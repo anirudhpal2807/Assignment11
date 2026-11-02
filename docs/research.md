@@ -25,3 +25,4 @@ Using `scripts/analyze-chat.ts` across high-intensity cricket livestream chats, 
 - **F2 (3-Line Catch-up)**: Eliminates late-joiner scroll fatigue with a 3-line instant recap.
 - **F3 (Moment Explainer)**: Explains DRS/controversial balls tailored to fan level (Naya / Regular / Die-hard).
 - **F4 & F7 (Mood Meter & Creator Panel)**: Gives the creator actionable teleprompter cues in real time.
+

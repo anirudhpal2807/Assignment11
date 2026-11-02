@@ -28,7 +28,7 @@ export function useMatchSimulator(
 ) {
   const [currentBallIndex, setCurrentBallIndex] = useState<number>(0);
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
-  const [speed, setSpeed] = useState<number>(2000); // 2000ms per ball at 1x
+  const [speed, setSpeed] = useState<number>(4000); // 4000ms (4 seconds) per ball at 1x
 
   const totalBalls = match.balls.length;
   const currentBall: Ball | undefined = match.balls[currentBallIndex];
@@ -43,6 +43,9 @@ export function useMatchSimulator(
         if (ball.tags.includes("over-end") || (nextIdx + 1) % 6 === 0) {
           const overNum = Math.floor(ball.over);
           if (onOverEnd) onOverEnd(overNum);
+        }
+        if (nextIdx >= totalBalls - 1) {
+          setIsPlaying(false);
         }
         return nextIdx;
       } else {
@@ -65,9 +68,21 @@ export function useMatchSimulator(
     [totalBalls]
   );
 
-  const togglePlay = useCallback(() => {
-    setIsPlaying((prev) => !prev);
+  const reset = useCallback(() => {
+    setCurrentBallIndex(0);
+    setIsPlaying(false);
   }, []);
+
+  const togglePlay = useCallback(() => {
+    setIsPlaying((prev) => {
+      // If match is at the last ball, restart from ball 0 and play!
+      if (!prev && currentBallIndex >= totalBalls - 1) {
+        setCurrentBallIndex(0);
+        return true;
+      }
+      return !prev;
+    });
+  }, [currentBallIndex, totalBalls]);
 
   // Timer loop for simulation
   useEffect(() => {
@@ -85,20 +100,29 @@ export function useMatchSimulator(
     let runsAdded = 0;
     let wicketsCount = match.startState.wickets;
 
-    // Batters map
+    // Batters map initialized from 0 runs
     const batterMap: Record<string, BatterInnings> = {
-      "Arjun Rao": { name: "Arjun Rao", runs: 44, balls: 30, fours: 3, sixes: 0, isOut: false },
-      "Kabir Mehta": { name: "Kabir Mehta", runs: 16, balls: 11, fours: 1, sixes: 1, isOut: false },
-      "Dev Iyer": { name: "Dev Iyer", runs: 0, balls: 0, fours: 0, sixes: 0, isOut: false },
-      "Sameer Khan": { name: "Sameer Khan", runs: 0, balls: 0, fours: 0, sixes: 0, isOut: false },
+      "KL Rahul": { name: "KL Rahul", runs: 0, balls: 0, fours: 0, sixes: 0, isOut: false },
+      "Rohit Sharma": { name: "Rohit Sharma", runs: 0, balls: 0, fours: 0, sixes: 0, isOut: false },
+      "Virat Kohli": { name: "Virat Kohli", runs: 0, balls: 0, fours: 0, sixes: 0, isOut: false },
+      "Suryakumar Yadav": { name: "Suryakumar Yadav", runs: 0, balls: 0, fours: 0, sixes: 0, isOut: false },
+      "Axar Patel": { name: "Axar Patel", runs: 0, balls: 0, fours: 0, sixes: 0, isOut: false },
+      "Hardik Pandya": { name: "Hardik Pandya", runs: 0, balls: 0, fours: 0, sixes: 0, isOut: false },
+      "Dinesh Karthik": { name: "Dinesh Karthik", runs: 0, balls: 0, fours: 0, sixes: 0, isOut: false },
+      "Ravichandran Ashwin": { name: "Ravichandran Ashwin", runs: 0, balls: 0, fours: 0, sixes: 0, isOut: false },
     };
 
     // Bowlers map
     const bowlerMap: Record<string, BowlerSpell> = {
-      "Vikram Nair": { name: "Vikram Nair", overs: "2.0", maidens: 0, runs: 18, wickets: 1 },
-      "Rehan Ali": { name: "Rehan Ali", overs: "2.0", maidens: 0, runs: 14, wickets: 1 },
-      "Tushar Pandey": { name: "Tushar Pandey", overs: "2.0", maidens: 0, runs: 19, wickets: 1 },
+      "Shaheen Shah Afridi": { name: "Shaheen Shah Afridi", overs: "0.0", maidens: 0, runs: 0, wickets: 0 },
+      "Naseem Shah": { name: "Naseem Shah", overs: "0.0", maidens: 0, runs: 0, wickets: 0 },
+      "Haris Rauf": { name: "Haris Rauf", overs: "0.0", maidens: 0, runs: 0, wickets: 0 },
+      "Shadab Khan": { name: "Shadab Khan", overs: "0.0", maidens: 0, runs: 0, wickets: 0 },
+      "Mohammad Nawaz": { name: "Mohammad Nawaz", overs: "0.0", maidens: 0, runs: 0, wickets: 0 },
     };
+
+    // Track bowler balls bowled for spell computation
+    const bowlerBallsCount: Record<string, number> = {};
 
     for (let i = 0; i <= currentBallIndex; i++) {
       const b = match.balls[i];
@@ -112,6 +136,15 @@ export function useMatchSimulator(
         if (b.event === "SIX") batterMap[b.batter].sixes += 1;
       }
 
+      // Bowler stats
+      if (bowlerMap[b.bowler]) {
+        bowlerBallsCount[b.bowler] = (bowlerBallsCount[b.bowler] || 0) + 1;
+        bowlerMap[b.bowler].runs += b.runs + (b.extras || 0);
+        if (b.wicket && b.wicket.kind !== "run_out") {
+          bowlerMap[b.bowler].wickets += 1;
+        }
+      }
+
       // Wicket
       if (b.wicket) {
         wicketsCount += 1;
@@ -122,8 +155,17 @@ export function useMatchSimulator(
       }
     }
 
+    // Format bowler overs
+    for (const bName of Object.keys(bowlerMap)) {
+      const balls = bowlerBallsCount[bName] || 0;
+      const bOvers = Math.floor(balls / 6);
+      const bBalls = balls % 6;
+      bowlerMap[bName].overs = `${bOvers}.${bBalls}`;
+    }
+
     const currentScore = match.startState.score + runsAdded;
-    const totalBallsBowled = 14 * 6 + (currentBallIndex + 1);
+    const startBalls = (match.startOver || 0) * 6;
+    const totalBallsBowled = startBalls + (currentBallIndex + 1);
     const completedOvers = Math.floor(totalBallsBowled / 6);
     const ballsInOver = totalBallsBowled % 6;
     const currentOverStr = `${completedOvers}.${ballsInOver}`;
@@ -164,6 +206,7 @@ export function useMatchSimulator(
     nextBall,
     prevBall,
     jumpToBall,
+    reset,
     stats,
   };
 }

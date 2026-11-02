@@ -130,3 +130,4 @@ export const RoomPulseResponseSchema = z.object({
   creatorTips: z.array(z.string()).length(3),
   source: z.enum(["ai", "fallback"]),
 });
+

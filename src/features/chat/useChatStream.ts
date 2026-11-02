@@ -47,3 +47,4 @@ export function useChatStream(currentBallIndex: number) {
     recentChatForPrompt,
   };
 }
+

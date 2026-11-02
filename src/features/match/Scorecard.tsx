@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Play, Pause, SkipBack, SkipForward, Flame, AlertCircle } from "lucide-react";
+import { Play, Pause, SkipBack, SkipForward, RotateCcw, Flame, AlertCircle } from "lucide-react";
 import { MatchData } from "@/shared/types";
 import { BatterInnings, BowlerSpell } from "./useMatchSimulator";
 
@@ -20,11 +20,13 @@ interface ScorecardProps {
   currentBowlerName?: string;
   isPlaying: boolean;
   speed: number;
+  currentBallIndex?: number;
+  totalBalls?: number;
   onTogglePlay: () => void;
   onSetSpeed: (speed: number) => void;
   onNextBall: () => void;
   onPrevBall: () => void;
-  isMatchEnded?: boolean;
+  onReset?: () => void;
 }
 
 export function Scorecard({
@@ -38,18 +40,21 @@ export function Scorecard({
   rrr,
   batterMap,
   bowlerMap,
-  currentBatterName = "Kabir Mehta",
-  currentBowlerName = "Rehan Ali",
+  currentBatterName = "KL Rahul",
+  currentBowlerName = "Shaheen Shah Afridi",
   isPlaying,
   speed,
+  currentBallIndex = 0,
+  totalBalls = match.balls.length,
   onTogglePlay,
   onSetSpeed,
   onNextBall,
   onPrevBall,
-  isMatchEnded = false,
+  onReset,
 }: ScorecardProps) {
   const activeBatters = Object.values(batterMap).filter((b) => !b.isOut).slice(0, 2);
   const activeBowler = bowlerMap[currentBowlerName] || Object.values(bowlerMap)[0];
+  const isEnd = currentBallIndex >= totalBalls - 1;
 
   return (
     <div className="bg-stadium-800/90 border border-stadium-border/70 rounded-2xl p-5 shadow-xl space-y-4">
@@ -86,7 +91,7 @@ export function Scorecard({
 
         <div className="text-right">
           <div className="flex items-center justify-end gap-1.5 text-xs text-slate-400">
-            <div className="w-2.5 h-2.5 rounded-full bg-yellow-500"></div>
+            <div className="w-2.5 h-2.5 rounded-full bg-emerald-500"></div>
             <span>{match.battingFirst.team}</span>
           </div>
           <div className="text-sm font-mono text-slate-300 mt-1">
@@ -113,7 +118,7 @@ export function Scorecard({
           )}
           <span className="text-sm font-semibold tracking-wide">
             {runsNeeded === 0
-              ? "Mumbai Mavericks won the match! 🏆"
+              ? `${match.chasing} won the match! Historic MCG Chase! 🏆`
               : `Need ${runsNeeded} runs from ${ballsRemaining} balls`}
           </span>
         </div>
@@ -173,25 +178,41 @@ export function Scorecard({
       {/* Simulator Playback & Speed Controls */}
       <div className="pt-2 border-t border-stadium-border/40 flex items-center justify-between">
         <div className="flex items-center gap-1.5">
+          {onReset && (
+            <button
+              onClick={onReset}
+              title="Reset match to ball 0.1"
+              className="p-1.5 rounded-lg bg-stadium-700/60 hover:bg-stadium-700 text-slate-300 hover:text-white transition-all border border-stadium-border/50"
+            >
+              <RotateCcw className="w-3.5 h-3.5" />
+            </button>
+          )}
           <button
             onClick={onPrevBall}
             title="Previous ball"
-            className="p-1.5 rounded-lg bg-stadium-700/60 hover:bg-stadium-700 text-slate-300 hover:text-white transition-all border border-stadium-border/50"
+            disabled={currentBallIndex === 0}
+            className="p-1.5 rounded-lg bg-stadium-700/60 hover:bg-stadium-700 text-slate-300 hover:text-white transition-all border border-stadium-border/50 disabled:opacity-30 disabled:cursor-not-allowed"
           >
             <SkipBack className="w-3.5 h-3.5" />
           </button>
           <button
             onClick={onTogglePlay}
-            disabled={isMatchEnded}
-            className={`px-3 py-1.5 rounded-lg font-semibold text-xs transition-all flex items-center gap-1.5 shadow-sm ${
+            title={isPlaying ? "Pause" : isEnd ? "Replay Match from start" : "Play"}
+            className={`px-3 py-1.5 rounded-lg font-semibold text-xs transition-all flex items-center gap-1.5 shadow-sm active:scale-95 ${
               isPlaying
                 ? "bg-amber-600 hover:bg-amber-500 text-white"
+                : isEnd
+                ? "bg-blue-600 hover:bg-blue-500 text-white"
                 : "bg-emerald-600 hover:bg-emerald-500 text-white"
             }`}
           >
             {isPlaying ? (
               <>
                 <Pause className="w-3.5 h-3.5" /> Pause
+              </>
+            ) : isEnd ? (
+              <>
+                <RotateCcw className="w-3.5 h-3.5" /> Replay
               </>
             ) : (
               <>
@@ -202,8 +223,8 @@ export function Scorecard({
           <button
             onClick={onNextBall}
             title="Next ball"
-            disabled={isMatchEnded}
-            className="p-1.5 rounded-lg bg-stadium-700/60 hover:bg-stadium-700 text-slate-300 hover:text-white transition-all border border-stadium-border/50 disabled:opacity-40"
+            disabled={isEnd}
+            className="p-1.5 rounded-lg bg-stadium-700/60 hover:bg-stadium-700 text-slate-300 hover:text-white transition-all border border-stadium-border/50 disabled:opacity-30 disabled:cursor-not-allowed"
           >
             <SkipForward className="w-3.5 h-3.5" />
           </button>
@@ -212,9 +233,9 @@ export function Scorecard({
         {/* Speed Buttons */}
         <div className="flex items-center gap-1 bg-stadium-900/80 p-0.5 rounded-lg border border-stadium-border/60">
           {[
-            { label: "1x", value: 2000 },
-            { label: "2x", value: 1000 },
-            { label: "4x", value: 500 },
+            { label: "1x", value: 4000 },
+            { label: "2x", value: 2000 },
+            { label: "4x", value: 1000 },
           ].map((s) => (
             <button
               key={s.label}
@@ -233,3 +254,4 @@ export function Scorecard({
     </div>
   );
 }
+

@@ -67,18 +67,30 @@ export async function POST(req: NextRequest) {
       score += matchData.balls[i].runs + (matchData.balls[i].extras || 0);
       if (matchData.balls[i].wicket) wickets += 1;
     }
-    const totalBallsBowled = 14 * 6 + (ballIndex + 1);
+    const startBalls = (matchData.startOver || 0) * 6;
+    const totalBallsBowled = startBalls + (ballIndex + 1);
     const completedOvers = Math.floor(totalBallsBowled / 6);
     const ballsInOver = totalBallsBowled % 6;
     const ballsRemaining = Math.max(0, 120 - totalBallsBowled);
     const runsNeeded = Math.max(0, matchData.target - score);
 
-    // Pick fallback based on over
-    let fallbackCatchup = fallbackData.catchup.default;
-    if (completedOvers >= 18) {
-      fallbackCatchup = fallbackData.catchup.over19;
-    } else if (completedOvers >= 16) {
-      fallbackCatchup = fallbackData.catchup.over17;
+    // Pick fallback based on completed overs
+    const catchupStages = fallbackData.catchup as Record<string, { summary: string[]; watchNext: string }>;
+    let fallbackCatchup = catchupStages.powerplay;
+    if (completedOvers >= 19) {
+      fallbackCatchup = catchupStages.finalOver || catchupStages.climax;
+    } else if (completedOvers >= 17) {
+      fallbackCatchup = catchupStages.climax || catchupStages.deathOvers;
+    } else if (completedOvers >= 14) {
+      fallbackCatchup = catchupStages.deathOvers || catchupStages.rebuilding;
+    } else if (completedOvers >= 10) {
+      fallbackCatchup = catchupStages.rebuilding || catchupStages.crisis;
+    } else if (completedOvers >= 6) {
+      fallbackCatchup = catchupStages.crisis;
+    } else if (completedOvers >= 2) {
+      fallbackCatchup = catchupStages.earlyWickets || catchupStages.powerplay;
+    } else {
+      fallbackCatchup = catchupStages.powerplay;
     }
 
     const recentBalls = typedMatchData.balls.slice(Math.max(0, ballIndex - 8), ballIndex + 1);

@@ -10,3 +10,4 @@ We combined F1, F4, and F7 into a single unified `/api/room-pulse` call executed
 - **Token Efficiency**: 1 call instead of 3 saves ~65% input tokens per over.
 - **Synchronized State**: The Mood Meter, Top Questions, and Creator Tips always share the exact same contextual snapshot.
 - **Scale**: In production, Room Pulse executes once per room per over (shared across 10,000+ simultaneous viewers) rather than per user, making LLM costs scale with rooms × overs.
+

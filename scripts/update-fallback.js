@@ -1,0 +1,860 @@
+const fs = require("fs");
+const path = require("path");
+
+const fallbackData = {
+  catchup: {
+    powerplay: {
+      summary: [
+        "Pakistan ne 159/8 banaye hain aur India 160 ka target chase kar rahi hai MCG me 90,000 fans ke saamne.",
+        "Shaheen Shah Afridi aur Naseem Shah ne new ball se sharp swing aur 145+ kph pace se attack shuru kiya hai.",
+        "India ke openers KL Rahul aur Rohit Sharma crease par hain, required rate 8.00 rpo hai."
+      ],
+      watchNext: "Powerplay ke 6 overs me wickets bachana aur new ball swing ko tackle karna India ke liye sabse bada challenge hai."
+    },
+    earlyWickets: {
+      summary: [
+        "Pakistan ke fast bowlers ne early breakthrough hasil ki hai - KL Rahul aur Rohit Sharma saste me out ho chuke hain.",
+        "Naseem Shah aur Haris Rauf ne apni 145+ kph pace aur steep bounce se Indian top order ko shake kar diya.",
+        "Suryakumar Yadav aur Virat Kohli crease par hain aur counter-attack karne ki koshish kar rahe hain."
+      ],
+      watchNext: "Powerplay overs me further wicket loss rokna aur boundary rate build karna crucial hai."
+    },
+    crisis: {
+      summary: [
+        "Disaster for India: Top 4 batsmen (Rahul, Rohit, SKY, aur Axar) sirf 31 runs par out ho chuke hain!",
+        "Haris Rauf aur Naseem Shah ne apni fiery pace se India ke top order ko dismantle kar diya.",
+        "Virat Kohli aur Hardik Pandya crease par hain aur innings ko rescue karne me lage hain, RRR 10+ ho gaya hai."
+      ],
+      watchNext: "Shadab Khan aur Mohammad Nawaz ke middle overs me singles rotate karna aur panic rokna crucial hoga."
+    },
+    rebuilding: {
+      summary: [
+        "Virat Kohli aur Hardik Pandya ne 50+ runs ki heroic partnership karke match me India ki umeed jagayi hai.",
+        "Hardik Pandya ne Mohammad Nawaz ko straight six maarkar counter-attack start kiya.",
+        "Required run rate 11-12 rpo ke paas pahunch chuka hai, game high-voltage death overs me enter kar raha hai."
+      ],
+      watchNext: "Shaheen Shah Afridi aur Haris Rauf ke aakhri overs me boundary rate badhana lazmi hai."
+    },
+    deathOvers: {
+      summary: [
+        "Hardik Pandya ne Naseem Shah ko 85m ka massive six maara aur Virat Kohli regular boundaries nikaal rahe hain.",
+        "Over 17.4 par Shan Masood ne Virat Kohli ka aasan catch drop karke match ka sabse bada lifeline diya.",
+        "Equation: India ko aakhri 18 balls me 45 runs chahiye, 6 wickets haath me hain."
+      ],
+      watchNext: "Shaheen Afridi ka aakhri over aayega, boundary lena India ke liye lazmi hai."
+    },
+    climax: {
+      summary: [
+        "Haris Rauf ke 19th over me Virat Kohli ne lagatar 2 unbelievable sixes lagaye hain!",
+        "Shot of the century: 148 kph ball par bowler ke sir ke upar se straight six sightscreen me lagaya.",
+        "Last over me India ko 16 runs chahiye, spin bowler Mohammad Nawaz bowling karenge."
+      ],
+      watchNext: "Mohammad Nawaz aakhri over me bowling karenge Hardik aur Kohli ke saamne."
+    },
+    finalOver: {
+      summary: [
+        "Unbelievable finish at the MCG: Mohammad Nawaz ke last over me No Ball + Six, Free Hit drama aur stumpings hue!",
+        "Ravichandran Ashwin ne mid-off ke upar cool winning shot karke match finish kiya!",
+        "Virat Kohli ne 82* (53) ki historic chase innings khelkar India ko 4 wickets se unforgettable victory dilayi!"
+      ],
+      watchNext: "Post-match presentation aur King Kohli ke emotional tears of celebration dekhein!"
+    },
+    default: {
+      summary: [
+        "Pakistan ne 159/8 banaye hain aur India 160 ka chase kar rahi hai MCG me 90,000 fans ke saamne.",
+        "Shaheen Afridi aur Naseem Shah ne new ball se sharp pace se attack shuru kiya hai.",
+        "India ko jeetne ke liye 8.00 ka required run rate maintain karna hai."
+      ],
+      watchNext: "Opening overs me wickets bachana aur new ball swing ko sambhalna crucial hai."
+    }
+  },
+  explain: {
+    "0": {
+      naya: {
+        hinglish: "Shaheen Afridi ne 145 kph pe tez inswing ball dali jisko KL Rahul ne sambhal kar mid-on par khela.",
+        english: "Shaheen Afridi starts with a fiery 145 kph incoming delivery, KL Rahul defends safely to mid-on.",
+        hindi: "शाहीन अफरीदी ने 145 किमी/घंटा की गति से इनस्विंग गेंद फेंकी, राहुल ने मिड-ऑन पर रक्षात्मक शॉट खेला।"
+      },
+      regular: {
+        hinglish: "0.1: Shaheen ne full inswinging yorker-length try ki, KL Rahul ne soft hands se mid-on par push kiya.",
+        english: "0.1: Shaheen tests Rahul right away with a sharp late swinging yorker length, defended cleanly.",
+        hindi: "0.1 ओवर: शाहीन की तेज इनस्विंगर पर राहुल ने सुरक्षित तरीके से मिड-ऑन पर रक्षात्मक शॉट खेला।"
+      },
+      diehard: {
+        hinglish: "0.1: Shaheen extracted 1.4 degrees of late inswing from the Southern Stand end at 145.2 kph on full-length.",
+        english: "0.1: Shaheen hit 145.2 kph with 1.4 degrees inward deviation off the seam into Rahul's front pad corridor.",
+        hindi: "0.1: शाहीन ने 145.2 किमी/घंटा पर 1.4 डिग्री लेट इनस्विंग हासिल की, जिसे राहुल ने सीधे बल्ले से संभाला।"
+      }
+    },
+    "10": {
+      naya: {
+        hinglish: "Naseem Shah ki tez ball batsman ke dande (stumps) par lag gayi aur KL Rahul bowled out ho gaya.",
+        english: "Naseem Shah's fast incoming ball clipped KL Rahul's inside edge and crashed onto the stumps.",
+        hindi: "नसीम शाह की तेज गेंद राहुल के बल्ले का अंदरूनी किनारा लेकर स्टंप्स में जा घुसी और राहुल बोल्ड हो गए।"
+      },
+      regular: {
+        hinglish: "1.5: Naseem Shah ne 145 kph pe nip-backer phenki, KL Rahul backfoot defense me inside edge lagakar bowled ho gaye 4 runs par.",
+        english: "1.5: Naseem Shah breaches KL Rahul's forward defense with a sharp 145 kph nip-backer, dragging onto leg stump.",
+        hindi: "1.5: नसीम शाह की 145 किमी/घंटे की इन-कटर पर राहुल 4 रन बनाकर बोल्ड हो गए।"
+      },
+      diehard: {
+        hinglish: "1.5: Heavy seam movement at 145 kph. Rahul played with angled bat outside the off-stump line, ball jagged back 1.2 degrees into off/middle peg.",
+        english: "1.5: Naseem hit the crack on back-of-a-length, seaming back 1.2 degrees to beat Rahul's forward defensive bat-pad gap.",
+        hindi: "1.5: नसीम शाह की 1.2 डिग्री सीम मूवमेंट वाली गेंद राहुल के बल्ले और पैड के बीच से निकलकर लेग स्टंप पर जा लगी।"
+      }
+    },
+    "19": {
+      naya: {
+        hinglish: "Rohit Sharma ne tez ball ko chheda aur slip par khade Pakistani fielder ne aasan catch pakad liya.",
+        english: "Rohit Sharma poked at a fast delivery from Haris Rauf and was caught by Iftikhar at first slip.",
+        hindi: "रोहित शर्मा ने हारिस रऊफ की गेंद को खेला और पहली स्लिप में कैच थमा बैठे।"
+      },
+      regular: {
+        hinglish: "3.2: Haris Rauf ki 146 kph length delivery pe Rohit Sharma ne drive karne ki koshish ki, thick edge slip me Iftikhar ne pakda! India 10/2!",
+        english: "3.2: Huge blow! Haris Rauf extracts extra bounce at 146 kph, Rohit edges to Iftikhar Ahmed at first slip. India 10/2.",
+        hindi: "3.2: हारिस रऊफ की 146 किमी/घंटे की उछाल लेती गेंद पर रोहित शर्मा स्लिप में इफ्तिखार को कैच दे बैठे।"
+      },
+      diehard: {
+        hinglish: "3.2: Rauf dialed 146.4 kph in the corridor of uncertainty. Rohit committed forward with firm wrists, resulting in an 18-degree outside deviation straight to slip.",
+        english: "3.2: 146.4 kph hard length delivery with steep MCG bounce. Rohit's hands were drawn away from body, yielding a regulation 0.94 xC catch to first slip.",
+        hindi: "3.2: 146 किमी/घंटा की गति और अतिरिक्त उछाल के चलते रोहित शर्मा के बल्ले का किनारा लगा और स्लिप में आसान कैच गया।"
+      }
+    },
+    "20": {
+      naya: {
+        hinglish: "Suryakumar Yadav ne aate hi pehli ball par point ke peeche shaandar chauka (four) maar diya!",
+        english: "Suryakumar Yadav arrived and immediately carved a first-ball boundary through backward point!",
+        hindi: "सूर्यकुमार यादव ने आते ही पहली ही गेंद पर बैकवर्ड पॉइंट की दिशा में खूबसूरत चौका जड़ दिया!"
+      },
+      regular: {
+        hinglish: "3.3: SKY fearless counter-attack! Haris Rauf ki 145 kph ball ko backward point ke gap me steer karke FOUR lagaya!",
+        english: "3.3: Fearless intent from SKY! Steers Haris Rauf's 145 kph pace through backward point for a crisp FOUR.",
+        hindi: "3.3: सूर्यकुमार यादव ने हारिस रऊफ की तेज गेंद को बैकवर्ड पॉइंट से काटकर शानदार चौका बटोरा।"
+      },
+      diehard: {
+        hinglish: "3.3: Late cut timing against 145.8 kph pace. SKY opened the face late, using pace through 35-degree angle behind square.",
+        english: "3.3: Opened the bat face with elite wrist dexterity at 145.8 kph, beating short third man with supreme precision.",
+        hindi: "3.3: 145.8 किमी/घंटा की गति पर बल्ले का मुंह देर से खोलकर बैकवर्ड पॉइंट के गैप में 4 रन बटोरे।"
+      }
+    },
+    "32": {
+      naya: {
+        hinglish: "Suryakumar Yadav tez ball par cut karne gaye aur wicketkeeper Rizwan ne catch pakad liya.",
+        english: "Suryakumar Yadav tried to cut a rising fast delivery and edged behind to keeper Mohammad Rizwan.",
+        hindi: "सूर्यकुमार यादव तेज गेंद पर कट करने गए और विकेटकीपर रिज़वान को कैच दे बैठे।"
+      },
+      regular: {
+        hinglish: "5.3: Haris Rauf strikes again! 147 kph short delivery par extra bounce hui, SKY ka thick edge keeper Rizwan ne pakda. SKY out 15 runs par! India 31/3!",
+        english: "5.3: Haris Rauf's fiery pace claims SKY! 147 kph brute bounce takes the edge to Rizwan. India 31/3 at the end of Powerplay.",
+        hindi: "5.3: हारिस रऊफ की 147 किमी/घंटे की बाउंसर पर सूर्यकुमार का बल्ला लगा और रिज़वान ने आसान कैच पकड़ा।"
+      },
+      diehard: {
+        hinglish: "5.3: Steep 10.2 degree MCG bounce from back of length at 147.1 kph. SKY cramped for room on the cut, feathering an edge.",
+        english: "5.3: Rauf exploited shoulder-high bounce at 147.1 kph. SKY played away from the body, generating 14.5% edge probability into keeper gloves.",
+        hindi: "5.3: हारिस रऊफ की अतिरिक्त उछाल वाली गेंद पर कट खेलने में किनारा लगा और भारत को तीसरा झटका लगा।"
+      }
+    },
+    "37": {
+      naya: {
+        hinglish: "Dono batsmen me daudne me galti ho gayi aur Axar Patel run out ho gaye, India ke 4 wickets gir gaye.",
+        english: "A terrible mix-up between Kohli and Axar resulted in Axar Patel being run out at the non-striker end.",
+        hindi: "कोहली और अक्षर के बीच दौड़ने में गलतफहमी हुई और अक्षर पटेल रन आउट हो गए।"
+      },
+      regular: {
+        hinglish: "6.2: Shadab Khan ki ball par Kohli ne tap kiya, Axar daud pade par Kohli ne mana kiya. Babar ke throw par Rizwan ne run out kar diya! India 31/4!",
+        english: "6.2: Miscommunication between Kohli and Axar! Babar Azam's rapid throw to Rizwan catches Axar well short. India in deep crisis at 31/4.",
+        hindi: "6.2: बाबर आज़म के सीधे थ्रो पर रिज़वान ने अक्षर पटेल को रन आउट किया। भारत 31/4 पर गहरे संकट में।"
+      },
+      diehard: {
+        hinglish: "6.2: Catastrophic running mix-up. Hesitation on the drop-and-run at midwicket. Babar fielded cleanly within 1.1s, dismissing Axar by 2 yards.",
+        english: "6.2: Calamitous yes-no call. Babar swooped from short midwicket with an underarm flick to Rizwan, catching Patel 2 yards short.",
+        hindi: "6.2: तालमेल की कमी के कारण अक्षर पटेल 2 गज दूर रह गए और बाबर के थ्रो पर रन आउट हो गए।"
+      }
+    },
+    "67": {
+      naya: {
+        hinglish: "Hardik Pandya ne aage badhkar Mohammad Nawaz ki ball par seedha sixer mara!",
+        english: "Hardik Pandya stepped out and smashed Mohammad Nawaz straight down the ground for a huge six!",
+        hindi: "हार्दिक पंड्या ने आगे बढ़कर मोहम्मद नवाज की गेंद पर सामने लंबा छक्का जड़ दिया!"
+      },
+      regular: {
+        hinglish: "11.2: Hardik Pandya counter-attacks! Nawaz ki tossed up ball par step out karke straight over long-on 80m SIX! India's first maximum!",
+        english: "11.2: Hardik launches Nawaz down the ground! Dances down the pitch and launches an 80m six over long-on. India 61/4.",
+        hindi: "11.2: हार्दिक पंड्या ने नवाज के खिलाफ कदमों का इस्तेमाल करके 80 मीटर का गगनचुंबी छक्का लगाया।"
+      },
+      diehard: {
+        hinglish: "11.2: Hardik advanced 2.4 meters, met the ball on the half-volley with full face extension, clearing long-on fence by 12 meters.",
+        english: "11.2: Elite footwork negating Nawaz's drift. High exit angle (32 deg) producing an 80m clearance straight down the ground.",
+        hindi: "11.2: नवाज की फ्लाइटेड गेंद पर कदमों का बेहतरीन इस्तेमाल कर 32 डिग्री के एलिवेशन के साथ 80 मीटर का छक्का मारा।"
+      }
+    },
+    "72": {
+      naya: {
+        hinglish: "Virat Kohli ne Shadab Khan ki choti ball par midwicket ki taraf tez chauka (four) mara!",
+        english: "Virat Kohli rocked back and pulled Shadab Khan's short ball through midwicket for a boundary!",
+        hindi: "विराट कोहली ने शादाब खान की शॉर्ट पिच गेंद को मिडविकेट की दिशा में चौके के लिए खींच दिया!"
+      },
+      regular: {
+        hinglish: "12.1: King Kohli in control! Shadab ki short ball ko backfoot se pull karke midwicket gap me FOUR nikala! Score 70/4.",
+        english: "12.1: Masterful pull! Kohli picks the length in a flash and hammers Shadab through deep midwicket for FOUR.",
+        hindi: "12.1: कोहली ने शादाब की गेंद की लेंथ को जल्दी भांपकर मिडविकेट बाउंड्री की तरफ शानदार चौका जड़ा।"
+      },
+      diehard: {
+        hinglish: "12.1: Rapid weight transfer onto the back foot. Kohli exploited Shadab's flat 88 kph trajectory with high-speed horizontal bat swing.",
+        english: "12.1: Flawless backfoot swivel against 88 kph leg-break, generating 128 kph exit velocity through the midwicket pocket.",
+        hindi: "12.1: बैकफुट पर वजन शिफ्ट करते हुए 128 किमी/घंटा की एग्जिट वेलोसिटी के साथ मिडविकेट में चौका निकाला।"
+      }
+    },
+    "97": {
+      naya: {
+        hinglish: "Pakistan ne umpire ke 'Not Out' faisle par review (DRS) nahi liya kyunki ball stump se bahar nikal rahi thi.",
+        english: "Pakistan chose not to review the umpire's Not Out decision because the ball was clearly missing leg stump.",
+        hindi: "पाकिस्तान ने अंपायर के 'नॉट आउट' फैसले पर रिव्यू नहीं लिया क्योंकि गेंद स्टंप्स से बाहर जा रही थी।"
+      },
+      regular: {
+        hinglish: "16.2: Naseem Shah ki ball Kohli ke pad par lagi, LBW appeal hui par Babar ne DRS nahi liya. Ball-tracking dikhata ki ball leg stump miss kar rahi thi.",
+        english: "16.2: Huge LBW shout against Kohli! Naseem Shah was convinced, but Babar declined the review. Ball-tracking showed it pitched outside leg.",
+        hindi: "16.2: नसीम शाह की गेंद कोहली के पैड पर लगी। अंपायर ने नॉट आउट दिया और पाकिस्तान ने डीआरएस नहीं लिया।"
+      },
+      diehard: {
+        hinglish: "16.2: Naseem angled in from wide of crease. Impact was umpire's call at 2.8m, but impact line was pitching outside leg (54mm), so review would have been burned.",
+        english: "16.2: Ball-tracking projected pitching 54mm outside leg stump line. Babar Azam made the tactically correct call to preserve their final DRS review.",
+        hindi: "16.2: बॉल ट्रैकिंग के अनुसार गेंद लेग स्टंप से 54 मिमी बाहर पिच हो रही थी, जिससे रिव्यू लेने पर पाकिस्तान का डीआरएस बर्बाद हो जाता।"
+      }
+    },
+    "100": {
+      naya: {
+        hinglish: "Hardik Pandya ne poori taqat se ball ko stand me mara aur 85 meter ka massive sixer laga diya!",
+        english: "Hardik Pandya connected with tremendous power and dispatched Naseem Shah for a monstrous 85m six!",
+        hindi: "हार्दिक पंड्या ने पूरी ताकत से नसीम शाह की गेंद को स्टैंड में 85 मीटर लंबा छक्का जड़ दिया!"
+      },
+      regular: {
+        hinglish: "16.5: Massive Hardik strike! Naseem ki length delivery ko midwicket stand me mara 85m six! Score 115/4, equation down to 45 off 19!",
+        english: "16.5: Hardik unlocks the clutch gear! Punishes Naseem's slot ball 85 meters into the midwicket tier! 45 needed off 19.",
+        hindi: "16.5: हार्दिक का जबड़ा-तोड़ छक्का! नसीम की गेंद पर मिडविकेट के ऊपर 85 मीटर लंबा छक्का मारा।"
+      },
+      diehard: {
+        hinglish: "16.5: Cleared the front leg, generated massive bottom-hand lever against 143 kph pace, launching ball at 141 kph exit speed.",
+        english: "16.5: Bottom-hand leverage neutralized 143 kph pace, registering a 141 kph exit speed and 31-degree launch angle into the deep tier.",
+        hindi: "16.5: बॉटम हैंड के जबरदस्त उपयोग से 143 किमी/घंटा की गेंद को 141 किमी/घंटा की रफ्तार से स्टैंड्स में भेजा।"
+      }
+    },
+    "105": {
+      naya: {
+        hinglish: "Shan Masood ne boundary line ke paas aasan catch drop kar diya aur Virat Kohli ko jeevandan mil gaya!",
+        english: "Shan Masood dropped a straightforward catch near the boundary rope, handing Virat Kohli a priceless lifeline!",
+        hindi: "शान मसूद ने बाउंड्री लाइन पर आसान कैच छोड़ दिया और विराट कोहली को अमूल्य जीवनदान मिल गया!"
+      },
+      regular: {
+        hinglish: "17.4: Match ka sabse bada turning point! Shaheen ki slower ball Kohli ne hawa me slice ki, deep cover pe Shan Masood ne aasan catch chhod diya!",
+        english: "17.4: Unbelievable drop! Kohli slices Shaheen's cutter high into the night sky, Shan Masood runs around at deep cover and shells a sitter!",
+        hindi: "17.4 ओवर: शाहीन अफरीदी की गेंद पर कोहली ने हवा में शॉट खेला, डीप कवर पर शान मसूद ने आसान कैच टपका दिया!"
+      },
+      diehard: {
+        hinglish: "17.4: Expected catch probability (xC) was 0.96. Swirling wind at MCG caused Masood to misjudge the trajectory at the last millisecond.",
+        english: "17.4: A catastrophic 0.96 xC drop. Masood over-ran the drop-zone under Melbourne swirling air currents, spilling a match-deciding wicket.",
+        hindi: "17.4: 96% कैच प्रोबेबिलिटी वाला आसान मौका मेलबर्न की हवा के चलते मसूद से हाथ से फिसल गया।"
+      }
+    },
+    "112": {
+      naya: {
+        hinglish: "Virat Kohli ne 148 kph ki tez ball par bowler Haris Rauf ke sir ke upar se seedha sixer maar diya!",
+        english: "Virat Kohli pulled off a miracle, punching Haris Rauf's 148 kph delivery straight back over the bowler's head for six!",
+        hindi: "विराट कोहली ने 148 किमी/घंटे की रफ्तार वाली गेंद पर हारिस रऊफ के सिर के ऊपर से सीधा अकल्पनीय छक्का जड़ दिया!"
+      },
+      regular: {
+        hinglish: "18.5: Shot of the century! Haris Rauf ki 148 kph back-of-length ball par Kohli ne backfoot se seedha bowler ke upar 84m straight six mara!",
+        english: "18.5: The shot of an emperor! Facing 148 kph from Haris Rauf, Kohli stands tall and punches an unfathomable straight six over long-on!",
+        hindi: "18.5: सदी का सबसे महान शॉट! 148 किमी/घंटे की गेंद पर कोहली ने सीधे गेंदबाज के सिर के ऊपर 84 मीटर का ऐतिहासिक छक्का लगाया!"
+      },
+      diehard: {
+        hinglish: "18.5: 148 kph heavy ball, chest-high bounce. Kohli maintained textbook head still position, using wrist snap and pure timing over long-on for an 84m six.",
+        english: "18.5: Defying physics against 148 kph short-of-length fire. Kohli held base, punched with high elbows straight back over long-on for a monumental six.",
+        hindi: "18.5: हारिस रऊफ की 148 किमी/घंटे की तेज शॉर्ट पिच गेंद को कोहली ने सीधे लॉन्ग-ऑन के ऊपर 84 मीटर दूर दर्शकों में पहुंचा दिया।"
+      }
+    },
+    "113": {
+      naya: {
+        hinglish: "Kohli ne lagatar doosra sixer mara! Haris Rauf ki ball ko fine leg ke upar se audience me bhej diya!",
+        english: "Kohli smashed back-to-back sixes! Flicked Haris Rauf's delivery over fine leg into the crowd!",
+        hindi: "कोहली ने लगातार दूसरा छक्का जड़ दिया! हारिस रऊफ की गेंद को फाइन लेग के ऊपर दर्शकों में पहुंचा दिया!"
+      },
+      regular: {
+        hinglish: "18.6: UNREAL VIRAT KOHLI! Haris ne pads par daali, Kohli ne wrist flick se fine leg boundary ke upar SIX mara! Equation: 16 off 6 balls!",
+        english: "18.6: Back-to-back sixes! Kohli uses supreme wristwork to flick Rauf over deep fine leg! 16 needed off the last over!",
+        hindi: "18.6: कोहली का एक और करिश्मा! कलाई के सहारे फाइन लेग पर छक्का लगाकर आखिरी ओवर में 16 रनों का समीकरण बना दिया।"
+      },
+      diehard: {
+        hinglish: "18.6: Rauf targeted the ribcage at 146.5 kph. Kohli pivoted 45 degrees, rolling wrists to dispatch the ball with 132 kph exit speed over fine leg.",
+        english: "18.6: Textbook pick-up whip against 146.5 kph angled delivery, generating 74m clearance behind square leg.",
+        hindi: "18.6: 146.5 किमी/घंटे की इन-एंगल्ड गेंद को कलाई के फ्लिक से 74 मीटर फाइन लेग के पार भेजा।"
+      }
+    },
+    "117": {
+      naya: {
+        hinglish: "Mohammad Nawaz ne kamar ke upar unchi ball daali jisko Kohli ne six mara aur umpire ne No Ball dekar Free Hit diya!",
+        english: "Mohammad Nawaz bowled a waist-high full toss which Kohli smashed for six, and the umpire called a NO BALL, giving India a Free Hit!",
+        hindi: "मोहम्मद नवाज ने कमर से ऊपर फुल टॉस गेंद फेंकी जिस पर कोहली ने छक्का जड़ा और अंपायर ने नो-बॉल का इशारा किया!"
+      },
+      regular: {
+        hinglish: "19.4: Nawaz ne waist-high full toss fenki, Kohli ne deep square leg par six mara. Umpire ne No Ball signal ki jisse 7 runs mile aur Free Hit mila!",
+        english: "19.4: Drama at its peak! Nawaz delivers a high full toss, Kohli hooks for six, and square leg umpire signals NO-BALL for height!",
+        hindi: "19.4 ओवर: नवाज की कमर से ऊंची फुल टॉस पर कोहली ने छक्का लगाया और अंपायर ने नो बॉल घोषित की जिससे भारत को फ्री-हिट मिली!"
+      },
+      diehard: {
+        hinglish: "19.4: Nawaz delivered an un-dipped waist-high full toss exceeding the popping crease height limit (Law 41.7). Result: 6 runs + 1 penalty run + Free Hit.",
+        english: "19.4: MCC Law 41.7 applied: any delivery passing above waist height of upright striker without pitching is deemed unfair. 6 runs + no-ball penalty.",
+        hindi: "19.4: एमसीसी नियम 41.7 के तहत कमर से ऊंची गेंद को नो-बॉल दिया गया। कोहली का छक्का + पेनल्टी रन और फ्री-हिट।"
+      }
+    },
+    "119": {
+      naya: {
+        hinglish: "R Ashwin ne aakhri ball par mid-off ke upar chip shot karke India ko historic victory dila di!",
+        english: "R Ashwin chipped the final ball over mid-off to seal an unforgettable victory for India!",
+        hindi: "रविचंद्रन अश्विन ने अंतिम गेंद पर मिड-ऑफ के ऊपर शॉट लगाकर भारत को ऐतिहासिक जीत दिला दी!"
+      },
+      regular: {
+        hinglish: "19.6: ASHWIN WINS IT FOR INDIA! Nawaz ki length ball par Ashwin ne mid-off fielder ke upar chip kiya aur 4 runs lekar match finish kiya! India wins by 4 wickets!",
+        english: "19.6: Ice in his veins! Ashwin lofts Nawaz cleanly over mid-off for FOUR, sealing a legendary 4-wicket win for India at the MCG!",
+        hindi: "19.6: अश्विन ने रचा इतिहास! मिड-ऑफ के ऊपर चौका जड़कर भारत को मेलबर्न में 4 विकेट से यादगार जीत दिलाई।"
+      },
+      diehard: {
+        hinglish: "19.6: Mid-off brought inside the circle. Ashwin played the percentage lofted push against the left-arm angle, clearing 28m infield circle with zero risk.",
+        english: "19.6: Infield up on the offside. Ashwin calmly exploited the gap over mid-off against Nawaz's arm-ball, delivering a 0.999 WP final strike.",
+        hindi: "19.6: इनफील्ड के ऊपर से सुरक्षित लॉफ्टेड ड्राइव खेलकर अश्विन ने भारत की ऐतिहासिक जीत सुनिश्चित की।"
+      }
+    }
+  },
+  roomPulse: {
+    "1": {
+      topQuestions: [
+        {
+          question: "Pakistan ne India ko kitna target diya hai?",
+          askedBy: 1450,
+          answer: "Pakistan ne 159/8 banaye hain, India ko jeetne ke liye 160 runs chahiye 120 balls mein (Required Rate: 8.00)."
+        },
+        {
+          question: "Shaheen Shah Afridi ki new ball attack kaisi hai?",
+          askedBy: 980,
+          answer: "Shaheen 145+ kph ki speed se dangerous late inswing karwa rahe hain, opening batsmen ko alert rehna hoga."
+        }
+      ],
+      mood: {
+        tension: 40,
+        hype: 88,
+        anger: 5,
+        humour: 20,
+        label: "Opening Over Excitement"
+      },
+      creatorTips: [
+        "Opening pair KL Rahul aur Rohit Sharma ke careful defense par crowd ke tension ko frame karo.",
+        "Shaheen Afridi ki dangerous new ball swing par chat ka dhyan kheecho.",
+        "MCG ke 90,000 spectators ke electrifying atmosphere ko describe karo."
+      ]
+    },
+    "2": {
+      topQuestions: [
+        {
+          question: "KL Rahul kaise out hua?",
+          askedBy: 2400,
+          answer: "1.5: Naseem Shah ki 145 kph nip-backer par Rahul backfoot defense me inside edge lagakar bowled ho gaye 4 runs par. India 7/1."
+        },
+        {
+          question: "Virat Kohli ke aate hi MCG me kaisa mahol hai?",
+          askedBy: 1850,
+          answer: "King Kohli #3 par crease par aaye hain aur 90,000 fans stadium me deafening roar laga rahe hain!"
+        }
+      ],
+      mood: {
+        tension: 65,
+        hype: 82,
+        anger: 20,
+        humour: 10,
+        label: "Early Stunner & Kohli Roar"
+      },
+      creatorTips: [
+        "Rahul ke dismissal aur Naseem Shah ki pace par live react karo: 'Early blow for India!'",
+        "Virat Kohli ke walk-in aur MCG ke massive roar ko describe karo.",
+        "Chat se pucho: 'Kya Kohli aaj chase master ban kar nikalenge?'"
+      ]
+    },
+    "3": {
+      topQuestions: [
+        {
+          question: "Rohit Sharma Shaheen Afridi ko kaise handle kar rahe hain?",
+          askedBy: 1650,
+          answer: "Rohit Sharma Shaheen ki swinging balls ko respect de rahe hain aur single lekar strike rotate ki. Score 10/1."
+        },
+        {
+          question: "Powerplay me India ka run rate kitna slow hai?",
+          askedBy: 1200,
+          answer: "3 overs ke baad India 10/1 par hai (CRR: 3.33), target 160 ke liye wickets bachana priority hai."
+        }
+      ],
+      mood: {
+        tension: 70,
+        hype: 78,
+        anger: 15,
+        humour: 10,
+        label: "Cautious Powerplay Defense"
+      },
+      creatorTips: [
+        "Shaheen vs Rohit ke classic rivalry battle ko commentate karo.",
+        "Crowd ko remind karo ki MCG ki new ball pitch par early survival kitna zaruri hai.",
+        "Chat prediction mangao: 'Powerplay ke end tak India ka score kya hoga?'"
+      ]
+    },
+    "4": {
+      topQuestions: [
+        {
+          question: "Rohit Sharma kaise out hue aur score kya hai?",
+          askedBy: 3400,
+          answer: "3.2: Haris Rauf ki 146 kph hard length ball par Rohit drive karne gaye aur slip me Iftikhar ne catch pakda! India 10/2!"
+        },
+        {
+          question: "Suryakumar Yadav ne aate hi kya kiya?",
+          askedBy: 2100,
+          answer: "SKY ne fearless intent dikhate hue pehli hi ball par backward point ke through four maara!"
+        }
+      ],
+      mood: {
+        tension: 80,
+        hype: 78,
+        anger: 35,
+        humour: 15,
+        label: "Skipper Gone & SKY Fire"
+      },
+      creatorTips: [
+        "Rohit ke dismissal par Indian fans ke shock ko voice do.",
+        "Suryakumar Yadav ke fearless first-ball boundary ko hype karo.",
+        "Poll run karo: 'Kya SKY aur Kohli match ko bacha paayenge?'"
+      ]
+    },
+    "5": {
+      topQuestions: [
+        {
+          question: "Suryakumar Yadav Naseem Shah ke against kaise attack kar rahe hain?",
+          askedBy: 1950,
+          answer: "4.2: SKY ne Naseem Shah ki full ball par textbook lofted punch maara mid-on ke upar four ke liye! Score 24/2."
+        },
+        {
+          question: "Kohli ka role kya hai is situation me?",
+          askedBy: 1500,
+          answer: "Kohli anchor bankar ek end hold kar rahe hain aur quick singles lekar SKY ko strike de rahe hain."
+        }
+      ],
+      mood: {
+        tension: 75,
+        hype: 82,
+        anger: 20,
+        humour: 15,
+        label: "SKY Counter-Attacking"
+      },
+      creatorTips: [
+        "SKY ke timing aur audacious shot selection ki tareef karo.",
+        "Naseem Shah ke bounce aur pace response ko analyze karo.",
+        "Audience ko engage rakho: 'Surya Dada is looking dangerous!'"
+      ]
+    },
+    "6": {
+      topQuestions: [
+        {
+          question: "Suryakumar Yadav kaise out hue?",
+          askedBy: 3900,
+          answer: "5.3: Haris Rauf ki 147 kph rising ball par SKY cut karne gaye, outside edge Rizwan ne pakda! SKY out 15 par, India 31/3!"
+        },
+        {
+          question: "Axar Patel ko #5 par kyu bheja gaya?",
+          askedBy: 2200,
+          answer: "Left-hand right-hand combination maintain karne aur Shadab ke leg-spin ko tackle karne ke liye Axar ko promote kiya."
+        }
+      ],
+      mood: {
+        tension: 89,
+        hype: 68,
+        anger: 48,
+        humour: 8,
+        label: "Powerplay Collapse (31/3)"
+      },
+      creatorTips: [
+        "Powerplay me 31/3 par India ki critical situation explain karo.",
+        "Haris Rauf ke raw pace (2 wickets for 11 runs) ko acknowledge karo.",
+        "Remind fans: 'Virat Kohli abhi bhi crease par datte hue hain!'"
+      ]
+    },
+    "7": {
+      topQuestions: [
+        {
+          question: "Axar Patel run out kaise hua?",
+          askedBy: 4800,
+          answer: "6.2: Kohli ne tap kiya, Axar daude par Kohli ne mana kiya. Babar Azam ke rapid direct throw par Rizwan ne run out kiya! India 31/4!"
+        },
+        {
+          question: "Hardik Pandya aur Kohli ko ab kya karna hoga?",
+          askedBy: 2600,
+          answer: "Hardik aur Kohli India ki last recognized batting pair hain. Ab sirf single-double se 15th over tak deep le jana hoga."
+        }
+      ],
+      mood: {
+        tension: 96,
+        hype: 58,
+        anger: 68,
+        humour: 5,
+        label: "Total Crisis (31/4)"
+      },
+      creatorTips: [
+        "Catastrophic mix-up par react karo: 'Disaster at MCG! Top 4 back in the shed!'",
+        "Hardik Pandya aur Virat Kohli ki huge responsibility highlight karo.",
+        "Chat se pucho: 'Can King Kohli pull off a miracle from here?'"
+      ]
+    },
+    "8": {
+      topQuestions: [
+        {
+          question: "Mohammad Nawaz ke over me kya hua?",
+          askedBy: 1600,
+          answer: "Nawaz ne tight left-arm spin dali, Kohli aur Hardik ne koi risk nahi liya aur 6 singles nikale. Score 41/4."
+        },
+        {
+          question: "Required run rate ab kitna ho gaya hai?",
+          askedBy: 1950,
+          answer: "Required run rate 10.00 rpo pahunch chuka hai. 72 balls me 119 runs chahiye."
+        }
+      ],
+      mood: {
+        tension: 91,
+        hype: 62,
+        anger: 50,
+        humour: 10,
+        label: "Nerve-Wracking Rebuild"
+      },
+      creatorTips: [
+        "Kohli aur Hardik ke defensive rebuilding phase ko explain karo.",
+        "Chat me calm restore karo: 'Singles are gold right now!'",
+        "Ask chat: 'Will Hardik target the spinners Nawaz or Shadab?'"
+      ]
+    },
+    "9": {
+      topQuestions: [
+        {
+          question: "Shadab Khan ki spin bowling kaisi chal rahi hai?",
+          askedBy: 1750,
+          answer: "Shadab Khan tight stumps line par leg-break aur googly mix kar rahe hain, boundary bilkul nahi de rahe. Score 45/4."
+        },
+        {
+          question: "India boundary kyu nahi maar rahi?",
+          askedBy: 2100,
+          answer: "MCG ke huge boundaries aur 4 wickets girne ke baad Kohli aur Hardik ground shots par depend kar rahe hain."
+        }
+      ],
+      mood: {
+        tension: 90,
+        hype: 65,
+        anger: 40,
+        humour: 10,
+        label: "Pressure Mounts"
+      },
+      creatorTips: [
+        "MCG ke 85-meter square boundaries ke tactical challenge ko batao.",
+        "Hardik aur Kohli ki strike rotation speed ko highlight karo.",
+        "Keep the room engaged: 'Patience before the storm!'"
+      ]
+    },
+    "10": {
+      topQuestions: [
+        {
+          question: "Halfway stage par India ka score aur situation kya hai?",
+          askedBy: 3100,
+          answer: "10 overs ke baad India 50/4 par hai. India ko jeetne ke liye aakhri 60 balls me 110 runs chahiye (RRR: 11.00)."
+        },
+        {
+          question: "Kya India abhi bhi match me zinda hai?",
+          askedBy: 2800,
+          answer: "Jab tak Virat Kohli aur Hardik Pandya crease par hain, match fully open hai. Death overs me big hitting chahiye hogi."
+        }
+      ],
+      mood: {
+        tension: 88,
+        hype: 68,
+        anger: 35,
+        humour: 10,
+        label: "Halfway Crossroads (50/4)"
+      },
+      creatorTips: [
+        "10-over equation break down karo: '110 off 60 balls, 6 wickets left!'",
+        "Audience poll run karo: 'Believe in Kohli ya Pakistan will seal it?'",
+        "Build expectation: 'Counter-attack is coming soon!'"
+      ]
+    },
+    "11": {
+      topQuestions: [
+        {
+          question: "Over 11 me kya hua?",
+          askedBy: 1850,
+          answer: "Nawaz ne sirf 5 runs diye, score 55/4. Required rate 11.67 tak chadh chuka hai."
+        },
+        {
+          question: "Hardik Pandya kab attack shuru karenge?",
+          askedBy: 2200,
+          answer: "Hardik set ho chuke hain (16 off 19), agle over se counter-punch expected hai."
+        }
+      ],
+      mood: {
+        tension: 85,
+        hype: 72,
+        anger: 28,
+        humour: 15,
+        label: "Calculated Patience"
+      },
+      creatorTips: [
+        "Equation reminder: '105 needed off 54 balls!'",
+        "Highlight Hardik Pandya's fearless mindset under pressure.",
+        "Tell the room: 'Any over can trigger the turnaround!'"
+      ]
+    },
+    "12": {
+      topQuestions: [
+        {
+          question: "Hardik Pandya ka six kaisa tha?",
+          askedBy: 4200,
+          answer: "11.2: Hardik Pandya ne Mohammad Nawaz ki ball par step out karke seedha long-on ke upar monster SIX mara! First maximum of India's innings!"
+        },
+        {
+          question: "12th over me kitne runs aaye?",
+          askedBy: 2600,
+          answer: "Nawaz ke is over me 11 runs aaye, score 66/4 ho gaya aur momentum India ke favour me shift hua."
+        }
+      ],
+      mood: {
+        tension: 80,
+        hype: 86,
+        anger: 18,
+        humour: 20,
+        label: "First Maximum Spark!"
+      },
+      creatorTips: [
+        "Hardik ke monster six par screaming celebration karo: 'KUNG FU PANDYA STRIKES!'",
+        "Momentum shift aur Indian fans ke cheering roar ko describe karo.",
+        "Equation check: '94 needed off 48 balls! We have a game on!'"
+      ]
+    },
+    "13": {
+      topQuestions: [
+        {
+          question: "Virat Kohli ne Shadab ko kaise boundary maari?",
+          askedBy: 3600,
+          answer: "12.1: Kohli ne backfoot par rock hokar Shadab ki short ball ko midwicket par crack kiya FOUR ke liye! Score 74/4."
+        },
+        {
+          question: "Kohli aur Hardik ki partnership kitne runs ki ho chuki hai?",
+          askedBy: 2100,
+          answer: "Dono ke beech 43 runs ki partnership ho chuki hai aur India ko stabilize kar diya hai."
+        }
+      ],
+      mood: {
+        tension: 82,
+        hype: 88,
+        anger: 15,
+        humour: 15,
+        label: "Partnership Hope Rising"
+      },
+      creatorTips: [
+        "King Kohli ke classic pull shot par live analysis do.",
+        "Partnership milestone celebrate karo: 'Rescuing India from the ashes!'",
+        "Chat question: 'Can they bring the required rate under 10?'"
+      ]
+    },
+    "14": {
+      topQuestions: [
+        {
+          question: "Haris Rauf ke 14th over me kya hua?",
+          askedBy: 3800,
+          answer: "Hardik ne Haris Rauf ki 146 kph ball par glide karke third man par four nikala! 12 runs aaye over se, score 86/4."
+        },
+        {
+          question: "50 partnership poori hui kya?",
+          askedBy: 2900,
+          answer: "Haan! Kohli aur Hardik ne crucial 50-run stand complete kar liya hai! 74 runs chahiye 36 balls me."
+        }
+      ],
+      mood: {
+        tension: 85,
+        hype: 89,
+        anger: 12,
+        humour: 10,
+        label: "Game On! 74 off 36"
+      },
+      creatorTips: [
+        "50-run stand par dono batsmen ko salute karo.",
+        "36 balls me 74 runs ki calculation chat ko samjhao.",
+        "Build suspense: 'Pakistan pace attack coming back for death overs!'"
+      ]
+    },
+    "15": {
+      topQuestions: [
+        {
+          question: "Naseem Shah ke over me Kohli ne kya kiya?",
+          askedBy: 3900,
+          answer: "14.3: Kohli ne full length ball par cover ke through magnificent punch maara FOUR ke liye! 10 runs aaye, score 96/4."
+        },
+        {
+          question: "Ab aakhri 5 overs me kitne runs chahiye?",
+          askedBy: 3200,
+          answer: "India ko 30 balls me 64 runs chahiye. Equation: 12.80 runs per over."
+        }
+      ],
+      mood: {
+        tension: 86,
+        hype: 90,
+        anger: 15,
+        humour: 10,
+        label: "Masterclass In Motion"
+      },
+      creatorTips: [
+        "Kohli ke high-elbow cover drive ko praise karo: 'Pure elegance under extreme pressure!'",
+        "Equation break down: '64 off 30 balls, target is in sight!'",
+        "Get chat hype: 'Shaheen Afridi has 1 over left, Haris has 1 left!'"
+      ]
+    },
+    "16": {
+      topQuestions: [
+        {
+          question: "India ka 100 kab bana?",
+          askedBy: 4100,
+          answer: "15.2: Kohli ne Shaheen Afridi ko midwicket par whip karke four mara aur India ka century (106/4) poora kiya!"
+        },
+        {
+          question: "Shaheen ke 3 overs ke baad equation kya hai?",
+          askedBy: 3300,
+          answer: "Shaheen ke over me 10 runs aaye, ab 24 balls me 54 runs chahiye!"
+        }
+      ],
+      mood: {
+        tension: 87,
+        hype: 91,
+        anger: 15,
+        humour: 10,
+        label: "Century Stand Built"
+      },
+      creatorTips: [
+        "100-run mark par stadium atmosphere describe karo.",
+        "Shaheen ke against Kohli ki bravery ko highlight karo.",
+        "Remind viewers: 'Next over is Naseem Shah, death overs begin now!'"
+      ]
+    },
+    "17": {
+      topQuestions: [
+        {
+          question: "Pakistan ne DRS kyu nahi liya over 16.2 pe?",
+          askedBy: 2400,
+          answer: "Naseem Shah ki ball off stump ke bahar pitch ho rahi thi, review lene par waste ho jata."
+        },
+        {
+          question: "Hardik Pandya ka six kitna lamba tha?",
+          askedBy: 1350,
+          answer: "Hardik ne 85 meters ka massive six midwicket stands me mara. Score 115/4."
+        }
+      ],
+      mood: {
+        tension: 88,
+        hype: 90,
+        anger: 25,
+        humour: 10,
+        label: "High-Voltage Tension"
+      },
+      creatorTips: [
+        "DRS appeal par audience ka confusion clear karo: 'Pitching outside off tha!'",
+        "Hardik ke 85m monster six par crowd ke roar ko react karo.",
+        "Equation remind karo: '45 needed off 18 balls!'"
+      ]
+    },
+    "18": {
+      topQuestions: [
+        {
+          question: "Shan Masood ne Virat Kohli ka catch kyu chhod diya?",
+          askedBy: 6800,
+          answer: "Melbourne ki hawa aur unchi ball ke chakkar me deep cover pe Shan Masood aasan catch drop kar gaye."
+        },
+        {
+          question: "Ab aakhri 12 balls me kitne runs chahiye?",
+          askedBy: 5200,
+          answer: "India ko 12 balls me 31 runs chahiye. Agla over Haris Rauf ka hai."
+        }
+      ],
+      mood: {
+        tension: 94,
+        hype: 92,
+        anger: 40,
+        humour: 15,
+        label: "Catches Win Matches Chaos"
+      },
+      creatorTips: [
+        "Shan Masood ke drop par crowd ke shock ko address karo: 'King Kohli ko jeevandan mila!'",
+        "Shaheen ke over me 14 runs aane se India match me fully alive hai.",
+        "Haris Rauf vs Virat Kohli ke decisive 19th over ko build-up karo."
+      ]
+    },
+    "19": {
+      topQuestions: [
+        {
+          question: "Haris Rauf ko Kohli ne straight six kaise mara?",
+          askedBy: 9500,
+          answer: "148 kph ki short ball par Kohli ne backfoot se seedha bowler ke sir ke upar se MCG sightscreen me 84m six mara!"
+        },
+        {
+          question: "Last over me kitne runs chahiye aur kaun bowler hai?",
+          askedBy: 8900,
+          answer: "Last over me 16 runs chahiye 6 balls me. Mohammad Nawaz bowl karenge."
+        }
+      ],
+      mood: {
+        tension: 99,
+        hype: 100,
+        anger: 15,
+        humour: 10,
+        label: "Shot of the Century Euphoria"
+      },
+      creatorTips: [
+        "Scream reaction: 'SHOT OF AN EMPEROR! GREATEST T20 SHOT EVER!'",
+        "Haris Rauf par 2 back-to-back sixes ko century ka sabse iconic moment declare karo.",
+        "Equation break down: '16 off 6 balls, spin vs Kohli & Hardik!'"
+      ]
+    },
+    "20": {
+      topQuestions: [
+        {
+          question: "Over 19.4 par No Ball kyu di gayi?",
+          askedBy: 9800,
+          answer: "Mohammad Nawaz ki ball waist height se upar thi jo Law 41.7 ke hisaab se clear No Ball thi."
+        },
+        {
+          question: "Free hit par bowled hone ke baad 3 runs byes kaise mile?",
+          askedBy: 8200,
+          answer: "Free hit par batsman bowled hone par out nahi hota aur ball dead nahi hoti, isliye byes maane gaye."
+        },
+        {
+          question: "Winning run kisne mara aur match ka final result kya hai?",
+          askedBy: 11500,
+          answer: "R Ashwin ne mid-off ke upar chip karke winning run banaya! India ne Pakistan ko 4 wickets se haraya!"
+        }
+      ],
+      mood: {
+        tension: 30,
+        hype: 100,
+        anger: 20,
+        humour: 30,
+        label: "Unbelievable Victory & Pure Joy"
+      },
+      creatorTips: [
+        "Salute King Kohli: '82* off 53 balls, the greatest T20 innings ever played!'",
+        "Ashwin ke ice-cool leave aur winning shot ki tareef karo.",
+        "Sign off with thanks to 95k viewers for living this historic moment together!"
+      ]
+    }
+  }
+};
+
+const targetPath = path.join(__dirname, "../src/data/matches/mm-vs-cc-final/fallback.json");
+fs.writeFileSync(targetPath, JSON.stringify(fallbackData, null, 2), "utf-8");
+console.log("Successfully wrote complete 20-over synchronized fallback data!");
+

@@ -19,11 +19,13 @@ export function ChatFeed({
   source = "fallback",
 }: ChatFeedProps) {
   const [inputText, setInputText] = useState("");
-  const endOfChatRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
 
-  // Auto-scroll on new messages
+  // Auto-scroll ONLY internal chat box, never the entire window
   useEffect(() => {
-    endOfChatRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+    }
   }, [messages.length]);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -47,7 +49,7 @@ export function ChatFeed({
   };
 
   return (
-    <div className="bg-stadium-800/80 border border-stadium-border/60 rounded-2xl flex flex-col h-full max-h-[680px] shadow-xl overflow-hidden">
+    <div className="bg-stadium-800/80 border border-stadium-border/60 rounded-2xl flex flex-col h-[520px] shadow-xl overflow-hidden">
       {/* Header */}
       <div className="p-3.5 border-b border-stadium-border/60 flex items-center justify-between bg-stadium-900/50">
         <div className="flex items-center gap-2">
@@ -58,7 +60,7 @@ export function ChatFeed({
         </div>
         <div className="flex items-center gap-1.5 text-[11px] text-slate-400 font-mono">
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-          <span>~4.2k fans watching</span>
+          <span>~95.4k fans watching (IND vs PAK)</span>
         </div>
       </div>
 
@@ -68,7 +70,10 @@ export function ChatFeed({
       </div>
 
       {/* Messages Scroll Area */}
-      <div className="flex-1 overflow-y-auto p-3 space-y-2.5">
+      <div
+        ref={messagesContainerRef}
+        className="flex-1 overflow-y-auto p-3 space-y-2.5 scroll-smooth"
+      >
         {messages.map((msg) => (
           <div
             key={msg.id}
@@ -95,7 +100,6 @@ export function ChatFeed({
             <p className="text-slate-100 text-xs break-words">{msg.text}</p>
           </div>
         ))}
-        <div ref={endOfChatRef} />
       </div>
 
       {/* Send Message Input */}

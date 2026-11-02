@@ -113,3 +113,4 @@ export function CatchupCard({ matchId, ballIndex }: CatchupCardProps) {
     </div>
   );
 }
+

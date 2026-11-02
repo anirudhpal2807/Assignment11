@@ -20,7 +20,7 @@ describe("API Routes Integration Tests", () => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         matchId: "mm-vs-cc-final",
-        ballIndex: 13,
+        ballIndex: 97,
         prefs: {
           fanLevel: "regular",
           language: "hinglish",
@@ -102,3 +102,4 @@ describe("API Routes Integration Tests", () => {
     expect(res.status).toBe(400);
   });
 });
+

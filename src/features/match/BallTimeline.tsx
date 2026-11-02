@@ -19,21 +19,25 @@ export function BallTimeline({
 }: BallTimelineProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // Auto-scroll to keep active ball visible
+  // Auto-scroll timeline HORIZONTALLY only, never vertical window scroll
   useEffect(() => {
     if (scrollRef.current) {
       const activeElement = scrollRef.current.children[currentBallIndex] as HTMLElement;
       if (activeElement) {
-        activeElement.scrollIntoView({
-          behavior: "smooth",
-          inline: "center",
-          block: "nearest",
-        });
+        const targetLeft =
+          activeElement.offsetLeft -
+          scrollRef.current.clientWidth / 2 +
+          activeElement.clientWidth / 2;
+        scrollRef.current.scrollTo({ left: Math.max(0, targetLeft), behavior: "smooth" });
       }
     }
   }, [currentBallIndex]);
 
-  const getBallBadge = (ball: Ball, isCurrent: boolean, isSelected: boolean) => {
+  const getBallBadge = (ball: Ball, isCurrent: boolean, isSelected: boolean, isPassed: boolean) => {
+    if (!isPassed) {
+      return "bg-stadium-900/30 text-slate-600 border-stadium-border/30";
+    }
+
     let bg = "bg-stadium-900/80 text-slate-300 border-stadium-border/60";
 
     if (ball.wicket) {
@@ -42,7 +46,7 @@ export function BallTimeline({
       bg = "bg-amber-500 text-stadium-900 font-extrabold border-amber-300 glow-amber";
     } else if (ball.event === "FOUR") {
       bg = "bg-emerald-500 text-stadium-900 font-extrabold border-emerald-300 glow-emerald";
-    } else if (ball.event === "DRS_NOT_TAKEN") {
+    } else if (ball.event === "DRS_NOT_TAKEN" || ball.event === "NO_BALL") {
       bg = "bg-purple-600 text-white font-bold border-purple-400 animate-pulse";
     } else if (ball.event === "DROPPED_CATCH") {
       bg = "bg-amber-700/80 text-amber-200 border-amber-400";
@@ -67,7 +71,7 @@ export function BallTimeline({
         </div>
         <div className="flex items-center gap-1 text-[11px] text-blue-400">
           <HelpCircle className="w-3 h-3" />
-          <span>Tap ball to explain</span>
+          <span>Tap ball to jump & explain</span>
         </div>
       </div>
 
@@ -84,20 +88,29 @@ export function BallTimeline({
           return (
             <button
               key={ball.index}
-              onClick={() => onSelectBall(ball)}
+              onClick={() => {
+                if (isPassed) onSelectBall(ball);
+              }}
+              disabled={!isPassed}
+              title={isPassed ? `Ball ${ball.over}: Click to jump & explain` : `Ball ${ball.over} (Upcoming)`}
               className={`flex-shrink-0 flex flex-col items-center group transition-transform ${
-                !isPassed ? "opacity-30 hover:opacity-75" : ""
+                !isPassed ? "opacity-30 cursor-not-allowed" : "cursor-pointer active:scale-95"
               }`}
             >
               <div
                 className={`w-9 h-9 rounded-full flex items-center justify-center text-xs font-mono border transition-all ${getBallBadge(
                   ball,
                   isCurrent,
-                  isSelected
+                  isSelected,
+                  isPassed
                 )}`}
               >
-                {ball.wicket
+                {!isPassed
+                  ? "•"
+                  : ball.wicket
                   ? "W"
+                  : ball.event === "NO_BALL"
+                  ? "NB"
                   : ball.event === "DRS_NOT_TAKEN"
                   ? "DRS"
                   : ball.event === "DROPPED_CATCH"

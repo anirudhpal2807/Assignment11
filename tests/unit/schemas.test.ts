@@ -10,7 +10,7 @@ describe("Data and Schemas Validation", () => {
     if (!result.success) {
       console.error(result.error);
     }
-    expect(matchData.balls.length).toBe(36);
+    expect(matchData.balls.length).toBe(120);
   });
 
   it("validates chat.json messages", () => {
@@ -24,17 +24,16 @@ describe("Data and Schemas Validation", () => {
     }
   });
 
-  it("verifies DRS controversy exists at ball index 13", () => {
+  it("verifies DRS controversy exists at over 16.2", () => {
     const drsBall = matchData.balls.find((b) => b.event === "DRS_NOT_TAKEN");
     expect(drsBall).toBeDefined();
-    expect(drsBall?.index).toBe(13);
     expect(drsBall?.over).toBe(16.2);
   });
 
   it("verifies dropped catch exists at over 17.4", () => {
     const droppedBall = matchData.balls.find((b) => b.event === "DROPPED_CATCH");
     expect(droppedBall).toBeDefined();
-    expect(droppedBall?.index).toBe(21);
     expect(droppedBall?.over).toBe(17.4);
   });
 });
+

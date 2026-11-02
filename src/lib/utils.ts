@@ -24,3 +24,4 @@ export function calculateRequiredRate(target: number, currentScore: number, rema
   const runsNeeded = Math.max(0, target - currentScore);
   return Math.round((runsNeeded / remainingBalls) * 6 * 100) / 100;
 }
+

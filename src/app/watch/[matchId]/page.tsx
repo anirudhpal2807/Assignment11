@@ -31,12 +31,15 @@ export default function WatchAlongPage() {
     match,
     currentBallIndex,
     currentBall,
+    totalBalls,
     isPlaying,
     speed,
     setSpeed,
     togglePlay,
     nextBall,
     prevBall,
+    jumpToBall,
+    reset,
     stats,
   } = useMatchSimulator();
 
@@ -44,7 +47,7 @@ export default function WatchAlongPage() {
   const { messages, sendUserMessage, recentChatForPrompt } = useChatStream(currentBallIndex);
 
   // Room Pulse (Batched top questions + mood + creator tips per over)
-  const currentOverNum = Math.floor(14 + (currentBallIndex + 1) / 6);
+  const currentOverNum = Math.max(1, Math.min(20, Math.ceil((currentBallIndex + 1) / 6)));
   const {
     topQuestions,
     currentMood,
@@ -142,17 +145,22 @@ export default function WatchAlongPage() {
             currentBowlerName={currentBall?.bowler}
             isPlaying={isPlaying}
             speed={speed}
+            currentBallIndex={currentBallIndex}
+            totalBalls={totalBalls}
             onTogglePlay={togglePlay}
             onSetSpeed={setSpeed}
             onNextBall={nextBall}
             onPrevBall={prevBall}
-            isMatchEnded={stats.isMatchEnded}
+            onReset={reset}
           />
 
           <BallTimeline
             balls={match.balls}
             currentBallIndex={currentBallIndex}
-            onSelectBall={(ball) => setSelectedBall(ball)}
+            onSelectBall={(ball) => {
+              jumpToBall(ball.index);
+              setSelectedBall(ball);
+            }}
             selectedBallIndex={selectedBall?.index}
           />
         </section>

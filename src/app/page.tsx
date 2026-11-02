@@ -26,32 +26,32 @@ export default function Home() {
           <div className="flex items-center justify-between">
             <span className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-red-400">
               <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-ping"></span>
-              Live Chase • Over 14+
+              Live Chase • Ball 1 (Over 0.1)
             </span>
-            <span className="text-xs text-slate-400 font-mono">T20 Final</span>
+            <span className="text-xs text-slate-400 font-mono">T20 World Cup</span>
           </div>
 
           <div>
             <div className="text-lg font-bold text-white">
-              Mumbai Mavericks vs Chennai Chargers
+              India vs Pakistan (MCG)
             </div>
             <div className="text-xs text-slate-400 mt-1">
-              Chargers: 185/6 (20 ov) • Mavericks need 62 off 36 balls
+              Pakistan: 159/8 (20 ov) • India chasing 160 (Target: 160 off 120 balls)
             </div>
           </div>
 
           <div className="grid grid-cols-3 gap-2 pt-2 text-center text-xs">
             <div className="bg-stadium-900/60 p-2 rounded-lg border border-stadium-border/40">
-              <span className="text-slate-400 block text-[10px]">DRS Drama</span>
-              <span className="text-purple-400 font-semibold">Over 16.2</span>
+              <span className="text-slate-400 block text-[10px]">Target</span>
+              <span className="text-white font-semibold font-mono">160 Runs</span>
             </div>
             <div className="bg-stadium-900/60 p-2 rounded-lg border border-stadium-border/40">
-              <span className="text-slate-400 block text-[10px]">Dropped Catch</span>
-              <span className="text-amber-400 font-semibold">Over 17.4</span>
+              <span className="text-slate-400 block text-[10px]">Required Rate</span>
+              <span className="text-amber-400 font-semibold font-mono">8.00 RPO</span>
             </div>
             <div className="bg-stadium-900/60 p-2 rounded-lg border border-stadium-border/40">
-              <span className="text-slate-400 block text-[10px]">2 Wickets</span>
-              <span className="text-red-400 font-semibold">Over 18.5</span>
+              <span className="text-slate-400 block text-[10px]">Opening Bowler</span>
+              <span className="text-blue-400 font-semibold">Shaheen Afridi</span>
             </div>
           </div>
 
@@ -87,3 +87,4 @@ export default function Home() {
     </main>
   );
 }
+

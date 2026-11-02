@@ -62,7 +62,8 @@ export async function POST(req: NextRequest) {
       score += matchData.balls[i].runs + (matchData.balls[i].extras || 0);
       if (matchData.balls[i].wicket) wickets += 1;
     }
-    const totalBallsBowled = 14 * 6 + (ballIndex + 1);
+    const startBalls = (matchData.startOver || 0) * 6;
+    const totalBallsBowled = startBalls + (ballIndex + 1);
     const completedOvers = Math.floor(totalBallsBowled / 6);
     const ballsInOver = totalBallsBowled % 6;
     const ballsRemaining = Math.max(0, 120 - totalBallsBowled);
@@ -70,7 +71,12 @@ export async function POST(req: NextRequest) {
 
     // Fallback extraction
     const ballKey = String(ballIndex);
-    const fallbackSection = (fallbackData.explain as Record<string, any>)[ballKey];
+    const fallbackSection =
+      (fallbackData.explain as Record<string, any>)[ballKey] ||
+      (ball.event === "DRS_NOT_TAKEN" ? (fallbackData.explain as any)["13"] : undefined) ||
+      (ball.event === "DROPPED_CATCH" ? (fallbackData.explain as any)["21"] : undefined) ||
+      (ball.event === "NO_BALL" ? (fallbackData.explain as any)["33"] : undefined) ||
+      (ball.event === "SIX" ? (fallbackData.explain as any)["28"] : undefined);
     const fallbackExplanation =
       fallbackSection?.[prefs.fanLevel]?.[prefs.language] ||
       `Ball ${ball.over}: ${ball.bowler} to ${ball.batter}. ${ball.runs} runs scored. ${ball.commentary}`;

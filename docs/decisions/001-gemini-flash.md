@@ -11,3 +11,4 @@ We chose **Google Gemini Flash** via Vercel AI SDK (`@ai-sdk/google`).
 - **Cost-effective**: Generous free tier and economical per-million token pricing fits high-volume watch-alongs.
 - **Native Structured Outputs**: Flawless schema adherence with Zod, eliminating fragile regex parsing.
 - **Hinglish Fluency**: Superior understanding of casual Romanized Indian colloquialisms and cricket slang.
+

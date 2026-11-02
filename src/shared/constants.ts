@@ -13,3 +13,4 @@ export const SIMULATOR_SPEEDS = [
   { label: "4x", value: 250 },
   { label: "Pause", value: 0 },
 ] as const;
+

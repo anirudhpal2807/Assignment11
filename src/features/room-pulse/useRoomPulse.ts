@@ -19,7 +19,7 @@ export function useRoomPulse(
   recentChat: { user: string; text: string }[],
   prefs: UserPrefs
 ) {
-  const initialOverFallback = fallbackData.roomPulse["15"];
+  const initialOverFallback = fallbackData.roomPulse["1"];
   const [topQuestions, setTopQuestions] = useState(initialOverFallback.topQuestions);
   const [currentMood, setCurrentMood] = useState(initialOverFallback.mood);
   const [creatorTips, setCreatorTips] = useState(initialOverFallback.creatorTips);
@@ -29,24 +29,16 @@ export function useRoomPulse(
   // History for Mood Meter Chart
   const [moodHistory, setMoodHistory] = useState<MoodPoint[]>([
     {
-      over: 14,
-      tension: 35,
-      hype: 60,
-      anger: 10,
-      humour: 30,
-      label: "Steady Start",
-    },
-    {
-      over: 15,
-      tension: 45,
-      hype: 70,
-      anger: 10,
-      humour: 35,
+      over: 1,
+      tension: initialOverFallback.mood.tension,
+      hype: initialOverFallback.mood.hype,
+      anger: initialOverFallback.mood.anger,
+      humour: initialOverFallback.mood.humour,
       label: initialOverFallback.mood.label,
     },
   ]);
 
-  const lastFetchedOver = useRef<number>(14);
+  const lastFetchedOver = useRef<number>(0);
 
   const fetchPulse = useCallback(
     async (overNum: number) => {
@@ -72,7 +64,7 @@ export function useRoomPulse(
         setSource(data.source);
 
         setMoodHistory((prev) => {
-          const filtered = prev.filter((p) => p.over !== overNum);
+          const filtered = prev.filter((p) => p.over <= overNum && p.over !== overNum);
           return [
             ...filtered,
             {
@@ -96,11 +88,20 @@ export function useRoomPulse(
 
   // Trigger when over changes
   useEffect(() => {
-    if (currentOver > lastFetchedOver.current && currentOver >= 15) {
+    if (currentOver !== lastFetchedOver.current && currentOver >= 1) {
       lastFetchedOver.current = currentOver;
+      const overKey = String(currentOver);
+      const fallbackForOver =
+        (fallbackData.roomPulse as Record<string, typeof initialOverFallback>)[overKey] ||
+        fallbackData.roomPulse["1"];
+      if (fallbackForOver) {
+        setTopQuestions(fallbackForOver.topQuestions);
+        setCurrentMood(fallbackForOver.mood);
+        setCreatorTips(fallbackForOver.creatorTips);
+      }
       fetchPulse(currentOver);
     }
-  }, [currentOver, fetchPulse]);
+  }, [currentOver, fetchPulse, initialOverFallback]);
 
   return {
     topQuestions,
@@ -112,3 +113,4 @@ export function useRoomPulse(
     refreshPulse: () => fetchPulse(currentOver),
   };
 }
+

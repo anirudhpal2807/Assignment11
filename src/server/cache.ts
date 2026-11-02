@@ -38,3 +38,4 @@ class MemoryCache {
 }
 
 export const cache = new MemoryCache();
+
