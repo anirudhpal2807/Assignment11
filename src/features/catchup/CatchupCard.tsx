@@ -29,6 +29,14 @@ export function CatchupCard({ matchId, ballIndex }: CatchupCardProps) {
     }
   }, [summary]);
 
+  // Re-fetch when user switches Language or Fan Level
+  useEffect(() => {
+    if (hasRequested) {
+      fetchCatchup(matchId, ballIndex, prefs);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [prefs.language, prefs.fanLevel]);
+
   return (
     <div className="bg-stadium-800/80 border border-stadium-border/60 rounded-xl p-4 shadow-lg space-y-3">
       <div className="flex items-center justify-between">
